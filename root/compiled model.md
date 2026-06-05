@@ -119,16 +119,16 @@ the model has a correct skeleton (embeddings from SVD) but incomplete muscles:
 |---|---|---|
 | embedding table | compiled from graph | works — structural similarity search |
 | [[focus]] distribution | compiled (PageRank) | works — importance ranking |
-| attention weights | random initialization | needs typed [[cyberlinks]] (semcon classification) |
+| attention weights | random initialization | needs typed [[cyberlinks]] (dialect classification) |
 | MLP weights | not computed | needs path sampling (random walks) |
 | output projection | capped at 50K vocab | needs full 2.9M vocabulary |
 
-when attention weights come from per-[[semcon]] SVD and MLP weights come from path co-occurrence statistics, the model will reason about the graph — not just index it.
+when attention weights come from per-[[dialect]] SVD and MLP weights come from path co-occurrence statistics, the model will reason about the graph — not just index it.
 
 ## the path forward
 
 1. resolve CID content → build text↔CID mapping → enable text queries
-2. classify [[cyberlinks]] by type (semcon) → compile real attention heads
+2. classify [[cyberlinks]] by type (dialect) → compile real attention heads
 3. sample random walks → compile MLP weights from path statistics
 4. grow the graph past [[phase transition]] ($\lambda_2 > \lambda_{crit}$) → richer embeddings
 5. recompile on each new moon alongside [[tri-kernel]] weights
