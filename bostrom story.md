@@ -6,4 +6,4 @@ crystal-domain: biology
 ---
 # bostrom story
 
-→ **[[edge city patagonia 2025/bostrom story]]** (moved with [[edge city patagonia 2025]] course pack)
+→ **[[edge-city-patagonia-2025/bostrom story]]** (moved with [[edge-city-patagonia-2025]] course pack)
