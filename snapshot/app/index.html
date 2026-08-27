@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>bostrom — final snapshot</title>
+<style>
+  :root{--bg:#000;--s1:#0b0b0b;--s2:#141414;--ln:#222;--tx:#e8e8e8;--mut:#8b948c;--grn:#22c55e;--cyan:#38bdf8;--amb:#eab308;--red:#e8262e}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);font-family:'Play',system-ui,-apple-system,sans-serif;line-height:1.6}
+  .wrap{max-width:920px;margin:0 auto;padding:32px 20px 80px}
+  h1{font-size:26px;margin:0 0 4px;font-weight:800}
+  .sub{color:var(--mut);font-family:ui-monospace,'JetBrains Mono',monospace;font-size:13px;margin-bottom:28px}
+  h2{font-size:15px;text-transform:uppercase;letter-spacing:2px;color:var(--grn);margin:36px 0 12px;font-family:ui-monospace,monospace}
+  .epitaph{background:var(--s1);border:1px solid var(--ln);border-left:3px solid var(--grn);border-radius:8px;padding:14px 16px;color:var(--mut);font-size:14px;margin-bottom:12px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:top}
+  th{color:var(--mut);font-weight:600;font-family:ui-monospace,monospace;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  td a{color:var(--cyan);text-decoration:none}
+  td a:hover{text-decoration:underline}
+  .file{font-family:ui-monospace,monospace;color:var(--tx)}
+  .desc{color:var(--mut)}
+  .sz{color:var(--mut);font-family:ui-monospace,monospace;white-space:nowrap}
+  .cid{font-family:ui-monospace,monospace;font-size:11px;color:var(--mut);word-break:break-all}
+  .card{background:var(--s1);border:1px solid var(--ln);border-radius:10px;padding:18px}
+  .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .tab{background:var(--s2);border:1px solid var(--ln);border-radius:20px;padding:6px 15px;cursor:pointer;font-size:13px;color:var(--mut)}
+  .tab.on{background:rgba(34,197,94,.12);border-color:var(--grn);color:var(--grn)}
+  input,textarea{width:100%;background:var(--bg);border:1px solid var(--ln);border-radius:8px;color:var(--tx);padding:11px 12px;font-family:ui-monospace,monospace;font-size:13px}
+  textarea{min-height:70px;resize:vertical}
+  button{background:var(--grn);color:#000;border:none;border-radius:8px;padding:11px 20px;font-weight:700;cursor:pointer;font-size:14px;margin-top:12px}
+  button:hover{filter:brightness(1.1)}
+  button.ghost{background:var(--s2);color:var(--tx);border:1px solid var(--ln)}
+  .hint{color:var(--mut);font-size:12px;margin-top:8px;font-family:ui-monospace,monospace}
+  .addr{font-family:ui-monospace,monospace;font-size:12px;color:var(--cyan);word-break:break-all;margin:12px 0}
+  .bal{margin-top:14px}
+  .bal .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--ln);font-family:ui-monospace,monospace;font-size:14px}
+  .bal .row .d{color:var(--grn)}
+  .err{color:var(--red);font-family:ui-monospace,monospace;font-size:13px;margin-top:10px}
+  .foot{margin-top:40px;color:var(--mut);font-size:12px;font-family:ui-monospace,monospace}
+  .foot a{color:var(--cyan);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🟢 bostrom — final snapshot</h1>
+  <div class="sub">halted at height 25,120,712 · 2026-08-05 08:55 UTC · the bootloader rests</div>
+
+  <div class="epitaph">
+    the bootloader chain ran three years and taught the <b>collective focus theorem</b> everything it knows —
+    3.1M particles, 2.9M cyberlinks, ~70K neurons, 47,837 passports. the knowledge moves to
+    <a href="https://cyber.page/soft3" style="color:var(--cyan)">soft3</a>; the chain is laid to rest.
+    every dataset below is content-addressed on IPFS — pinned to Pinata and the cybernode — so this record
+    outlives every server.
+  </div>
+
+  <h2>datasets</h2>
+  <table id="files"><thead><tr><th>file</th><th>what</th><th>size</th><th>download</th></tr></thead><tbody></tbody></table>
+  <div class="hint" id="verify"></div>
+
+  <h2>balance checker</h2>
+  <div class="card">
+    <div class="tabs">
+      <div class="tab on" data-m="addr">address</div>
+      <div class="tab" data-m="mnem">mnemonic</div>
+      <div class="tab" data-m="priv">private key</div>
+      <div class="tab" data-m="ledger">ledger</div>
+    </div>
+    <div id="in-addr"><input id="addr" placeholder="bostrom1..." autocomplete="off"/></div>
+    <div id="in-mnem" style="display:none"><textarea id="mnem" placeholder="twelve or twenty-four words — derived locally, never sent anywhere"></textarea></div>
+    <div id="in-priv" style="display:none"><input id="priv" placeholder="private key hex (64 chars) — derived locally"/></div>
+    <div id="in-ledger" style="display:none"><div class="hint">connect a Ledger with the Cosmos app open, then check.</div></div>
+    <button id="go">check balance</button>
+    <button id="clr" class="ghost">clear</button>
+    <div class="addr" id="derived"></div>
+    <div class="bal" id="bal"></div>
+    <div class="err" id="err"></div>
+    <div class="hint">the chain is dead — balances are read from the snapshot above, in your browser. keys never leave this page.</div>
+  </div>
+
+  <div class="foot">
+    reproduce every file from an archive node:
+    <a href="https://github.com/cyberia-to/bostrom/tree/main/snapshot">github.com/cyberia-to/bostrom/snapshot</a><br/>
+    manifest (sha256 of every file): <span id="manlink"></span>
+  </div>
+</div>
+
+<script type="module">
+const GW = "https://gateway.pinata.cloud/ipfs";
+const CIDS = {
+ "state_export.json.gz":"QmY8u2gHR2i5fhQWpkgdyXqByW1F6kokDqd4hCXReQDK2D",
+ "cyberlinks_indexed.csv.gz":"QmTfEcB2St3XEfC5xq14v5ybNQ4wzZfUMRkEZfqzQTXpe6",
+ "balances.csv":"QmYSRj4Wwu9tXq8DLLcVQYGEvcxPSfdBQzN6VQ9zttVES2",
+ "passports.jsonl":"QmTSZ1DLV61ATVMRBmqVnebDjhVG52gLijwPQYzBxq3jQQ",
+ "pools.json":"QmbtuP9wdD6KzMxVWCb9R1Un8XAkBEnWwMeB2P9B3qLbUr",
+ "delegations.csv":"QmS1qdQy1ipkB7TxzCeLTx7UnCuxud1nuoTR4DCcjX8Rwm",
+ "validators.json":"QmQFWhxhJmKEK6QSwL2oKCaeLxLH8NM4fUDFD4tJLMcTVu",
+ "pubkeys.csv":"QmXFT8ULxLqYV1jp388YFcXUCvJdCR8ptW2yJEQsNdp2sG",
+ "supply.json":"QmcyWzweYjtxM9cf1YFNh9c6Qg8yhe6yy4ghXC7wVasPaM",
+ "manifest.json":"QmfYy3UWWtGM1Q6rRkyDN5fC9iS7gtFPXeYSQJqZgPv1Py",
+};
+const DESC = {
+ "state_export.json.gz":"full chain state at halt (all modules) — gzip",
+ "cyberlinks_indexed.csv.gz":"cyberlink graph: from · to · neuron · height · time · tx — gzip",
+ "balances.csv":"every holder of BOOT · H · A · V · TOCYB · PUSSY · LP",
+ "passports.jsonl":"47,837 moon passports: nickname · owner · resolver",
+ "pools.json":"30 liquidity pools: reserves + prices at halt",
+ "delegations.csv":"delegator · validator · shares · boot",
+ "validators.json":"validator set with metadata",
+ "pubkeys.csv":"61,675 account public keys (for future claims)",
+ "supply.json":"total supply per denom",
+};
+const url = f => `${GW}/${CIDS[f]}/${f}`;
+
+// dataset table
+const order=["state_export.json.gz","cyberlinks_indexed.csv.gz","balances.csv","passports.jsonl","pools.json","delegations.csv","validators.json","pubkeys.csv","supply.json"];
+let man={};
+render();
+fetch(url("manifest.json")).then(r=>r.json()).then(m=>{man=m.files||{};render();}).catch(()=>{});
+function fmt(b){if(!b)return"";const u=["B","KB","MB","GB"];let i=0;while(b>1024&&i<3){b/=1024;i++}return b.toFixed(b<10&&i>0?1:0)+u[i]}
+function render(){
+  const tb=document.querySelector("#files tbody");
+  tb.innerHTML=order.map(f=>{
+    const sz=man[f]?fmt(man[f].bytes):"";
+    return `<tr><td class="file">${f}</td><td class="desc">${DESC[f]||""}</td><td class="sz">${sz}</td><td><a href="${url(f)}" download>download ↓</a></td></tr>`;
+  }).join("");
+  document.querySelector("#manlink").innerHTML=`<a href="${url("manifest.json")}">${CIDS["manifest.json"]}</a>`;
+  document.querySelector("#verify").textContent="each link is <CID>/<filename> on any IPFS gateway — swap gateway.pinata.cloud for ipfs.io or your own node.";
+}
+
+// tabs
+let mode="addr";
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+  mode=t.dataset.m;
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===t));
+  ["addr","mnem","priv","ledger"].forEach(m=>document.getElementById("in-"+m).style.display=m===mode?"block":"none");
+  document.getElementById("derived").textContent="";document.getElementById("bal").innerHTML="";document.getElementById("err").textContent="";
+});
+document.getElementById("clr").onclick=()=>{["addr","mnem","priv"].forEach(id=>{const e=document.getElementById(id);if(e)e.value=""});document.getElementById("derived").textContent="";document.getElementById("bal").innerHTML="";document.getElementById("err").textContent="";};
+
+// pure browser-ESM crypto: noble + scure (no Node deps, derived locally)
+let LIB=null;
+async function libs(){
+  if(LIB)return LIB;
+  const [bip39,bip32,secp,sha,rip,base]=await Promise.all([
+    import("https://esm.sh/@scure/bip39@1.3.0"),
+    import("https://esm.sh/@scure/bip32@1.4.0"),
+    import("https://esm.sh/@noble/curves@1.4.0/secp256k1"),
+    import("https://esm.sh/@noble/hashes@1.4.0/sha256"),
+    import("https://esm.sh/@noble/hashes@1.4.0/ripemd160"),
+    import("https://esm.sh/@scure/base@1.1.6"),
+  ]);
+  LIB={bip39,bip32,secp,sha,rip,base};return LIB;
+}
+async function addrOf(compressedPub){
+  const {sha,rip,base}=await libs();
+  const h=rip.ripemd160(sha.sha256(compressedPub));
+  return base.bech32.encode("bostrom", base.bech32.toWords(h));
+}
+async function fromMnemonic(m){
+  const {bip39,bip32,secp}=await libs();
+  const seed=await bip39.mnemonicToSeed(m.trim().replace(/\s+/g," "));
+  const hd=bip32.HDKey.fromMasterSeed(seed).derive("m/44'/118'/0'/0/0");
+  return addrOf(secp.secp256k1.getPublicKey(hd.privateKey, true));
+}
+async function fromPriv(hex){
+  const {secp,base}=await libs();
+  const pk=base.hex.decode(hex.trim().replace(/^0x/,"").toLowerCase());
+  return addrOf(secp.secp256k1.getPublicKey(pk, true));
+}
+async function fromLedger(){
+  const tp=(await import("https://esm.sh/@ledgerhq/hw-transport-webusb@6.29.4")).default;
+  const Cosmos=(await import("https://esm.sh/@ledgerhq/hw-app-cosmos@6.31.0")).default;
+  const transport=await tp.create();
+  const app=new Cosmos(transport);
+  const {address}=await app.getAddress("m/44'/118'/0'/0/0","bostrom");
+  return address;
+}
+
+// balances index (lazy)
+let BAL=null;
+async function loadBalances(){
+  if(BAL)return BAL;
+  const txt=await (await fetch(url("balances.csv"))).text();
+  BAL={};
+  const lines=txt.split("\n");
+  for(let i=1;i<lines.length;i++){
+    const [addr,denom,amount]=lines[i].split(",");
+    if(!addr)continue;
+    (BAL[addr]||(BAL[addr]=[])).push([denom,amount]);
+  }
+  return BAL;
+}
+const DENOM={boot:"BOOT",hydrogen:"H",milliampere:"A",millivolt:"V",tocyb:"TOCYB"};
+function dname(d){return DENOM[d]|| (d.startsWith("ibc/")?d.slice(0,12)+"…":d.startsWith("factory/")?"LP":d);}
+
+document.getElementById("go").onclick=async()=>{
+  const err=document.getElementById("err"),der=document.getElementById("derived"),bal=document.getElementById("bal");
+  err.textContent="";bal.innerHTML="";der.textContent="deriving…";
+  try{
+    let addr;
+    if(mode==="addr") addr=document.getElementById("addr").value.trim();
+    else if(mode==="mnem") addr=await fromMnemonic(document.getElementById("mnem").value);
+    else if(mode==="priv") addr=await fromPriv(document.getElementById("priv").value);
+    else if(mode==="ledger") addr=await fromLedger();
+    if(!addr||!addr.startsWith("bostrom1")){der.textContent="";err.textContent="not a bostrom address";return;}
+    der.textContent=addr;
+    bal.innerHTML='<div class="hint">loading snapshot balances…</div>';
+    const B=await loadBalances();
+    const rows=B[addr];
+    if(!rows){bal.innerHTML='<div class="hint">no balance for this address in the snapshot.</div>';return;}
+    bal.innerHTML=rows.map(([d,a])=>`<div class="row"><span class="d">${dname(d)}</span><span>${Number(a).toLocaleString()}</span></div>`).join("");
+  }catch(e){der.textContent="";err.textContent=String(e.message||e);}
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>bostrom final snapshot</title><style>
+body{background:#000;color:#e8e8e8;font-family:'JetBrains Mono',monospace;max-width:860px;margin:40px auto;padding:0 16px;line-height:1.55}
+h1{color:#22c55e;font-size:22px}h2{color:#22c55e;font-size:16px;margin-top:34px}
+a{color:#38bdf8;text-decoration:none}a:hover{text-decoration:underline}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:6px 8px;border-bottom:1px solid #222;text-align:left}
+th{color:#8b948c;font-weight:400}code{color:#eab308;font-size:12px}
+input,button{background:#111;border:1px solid #333;color:#e8e8e8;padding:9px 12px;font-family:inherit;font-size:14px;border-radius:6px}
+input{width:100%;box-sizing:border-box;margin:6px 0}button{cursor:pointer;margin-right:8px}button:hover{border-color:#22c55e}
+#bal{margin-top:14px}.tag{color:#8b948c;font-size:12px}.err{color:#ef4444}
+</style></head><body>
+<h1>⚫ bostrom — final snapshot</h1>
+<p class="tag">chain halted at height <b>25120712</b> · 2026-08-05 08:55 UTC · the graph and every balance preserved below. verify: every file's sha256 is in the manifest; every dataset reproducible with the <a href="https://github.com/cyberia-to/bootloader/tree/main/snapshot">published scripts</a>.</p>
+<h2>datasets</h2>
+<table id="files"><tr><th>file</th><th>size</th><th>sha256</th><th></th></tr></table>
+<p class="tag">gateways: <a id="gw1" href="#">ipfs.io</a> · <a id="gw2" href="#">dweb.link</a> · CID: <code id="cid"></code></p>
+<h2>balance checker</h2>
+<p class="tag">works entirely in your browser against the snapshot — no server, no chain. paste an address, a private key (never leaves this page), or connect a Ledger.</p>
+<input id="addr" placeholder="bostrom1... address" spellcheck="false">
+<input id="pk" placeholder="or hex private key (derived locally)" spellcheck="false">
+<div><button onclick="byAddr()">check address</button><button onclick="byPk()">derive from key</button><button onclick="byLedger()">connect ledger</button></div>
+<div id="bal"></div>
+<script>
+const CID = window.SNAPSHOT_CID || "SNAPSHOT_CID_PLACEHOLDER";
+const GW = `https://ipfs.io/ipfs/${CID}`;
+document.getElementById('cid').textContent = CID;
+document.getElementById('gw1').href = GW;
+document.getElementById('gw2').href = `https://dweb.link/ipfs/${CID}`;
+fetch('manifest.json').then(r=>r.json()).then(m=>{
+  const t=document.getElementById('files');
+  for(const [f,i] of Object.entries(m.files)){
+    const r=t.insertRow(); const mb=(i.bytes/1048576).toFixed(1);
+    r.innerHTML=`<td>${f}</td><td>${mb} MB</td><td><code>${i.sha256.slice(0,16)}…</code></td><td><a href="${GW}/${f}" download>ipfs ↓</a> · <a href="${f}" download>direct ↓</a></td>`;
+  }});
+const NAMES={boot:"BOOT",hydrogen:"H",milliampere:"A (milli)",millivolt:"V (milli)",tocyb:"TOCYB"};
+async function lookup(a){
+  const out=document.getElementById('bal');
+  if(!/^bostrom1[a-z0-9]{20,80}$/.test(a)){out.innerHTML='<span class="err">that is no bostrom address</span>';return}
+  out.textContent='searching the snapshot…';
+  const shard=a.slice(8,10);
+  try{
+    const r=await fetch(`balances/${shard}.json`); const d=await r.json();
+    const rows=d[a];
+    if(!rows){out.innerHTML=`<b>${a}</b><br>zero balances in the final state`;return}
+    out.innerHTML=`<b>${a}</b><table>`+Object.entries(rows).map(([dn,am])=>`<tr><td>${NAMES[dn]||dn}</td><td>${BigInt(am).toLocaleString()}</td></tr>`).join('')+'</table>';
+  }catch(e){out.innerHTML='<span class="err">shard fetch failed: '+e+'</span>'}
+}
+function byAddr(){lookup(document.getElementById('addr').value.trim())}
+// ── secp256k1 + bech32, minimal, local-only ──
+const P=2n**256n-2n**32n-977n,N=0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141n,Gx=0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798n,Gy=0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8n;
+const inv=(a,m)=>{let[g,x]=[m,0n],[r,s]=[a%m,1n];while(r){const q=g/r;[g,r]=[r,g-q*r];[x,s]=[s,x-q*s]}return(x%m+m)%m};
+function add(p,q){if(!p)return q;if(!q)return p;const[x1,y1]=p,[x2,y2]=q;if(x1===x2&&(y1+y2)%P===0n)return null;const l=x1===x2?(3n*x1*x1)*inv(2n*y1,P)%P:(y2-y1)*inv((x2-x1+P)%P,P)%P;const x3=(l*l-x1-x2%P+2n*P)%P,y3=(l*(x1-x3+P)-y1%P+2n*P)%P;return[x3%P,y3%P]}
+function mul(k){let r=null,a=[Gx,Gy];while(k){if(k&1n)r=add(r,a);a=add(a,a);k>>=1n}return r}
+async function pkToAddr(hex){
+  const k=BigInt('0x'+hex); if(k<=0n||k>=N)throw'invalid key';
+  const[x,y]=mul(k); const comp=new Uint8Array(33); comp[0]=y&1n?3:2;
+  for(let i=0;i<32;i++)comp[32-i]=Number(x>>BigInt(8*i)&0xffn);
+  const sha=new Uint8Array(await crypto.subtle.digest('SHA-256',comp));
+  return bech32('bostrom',ripemd160(sha));
+}
+async function byPk(){const h=document.getElementById('pk').value.trim().replace(/^0x/,'');
+  try{const a=await pkToAddr(h);document.getElementById('addr').value=a;lookup(a)}
+  catch(e){document.getElementById('bal').innerHTML='<span class="err">'+e+'</span>'}}
+// ripemd160 (compact)
+function ripemd160(m){const rl=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,7,4,13,1,10,6,15,3,12,0,9,5,2
