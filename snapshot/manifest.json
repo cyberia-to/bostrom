@@ -7,16 +7,16 @@
  "note": "the bootloader chain, laid to rest. every file is <CID>/<filename> on any IPFS gateway.",
  "files": {
   "balances.csv": {
-   "cid": "QmYSRj4Wwu9tXq8DLLcVQYGEvcxPSfdBQzN6VQ9zttVES2",
-   "sha256": "b2991a5939474d8f218a8ec938fb6e36f1a66ac9f8073a9611bc8fa8d5eb0a39",
-   "bytes": 5451045,
-   "desc": "Every holder of every core + LP denom: BOOT, H(hydrogen), A(mA), V(mV), TOCYB, PUSSY, LP"
+   "cid": "QmTsM6YazUmAkz7sNbL1NY88cMciZpiTWHZEDCo3gZVo1h",
+   "sha256": "2d74421adc8af9eef35aacd44c346528d708c0af6605e1787f3e024c1d9b7288",
+   "bytes": 5922111,
+   "desc": "Complete liquid bank balances, every account, every denom"
   },
   "cyberlinks_indexed.csv.gz": {
    "cid": "QmTfEcB2St3XEfC5xq14v5ybNQ4wzZfUMRkEZfqzQTXpe6",
    "sha256": "dc5c09319faa7b5f3507b981e720386bbc91bd744be190f2e39b0eff12b5954d",
    "bytes": 162062292,
-   "desc": "Cyberlink graph: from, to, neuron, height, timestamp, tx (2.7M links, indexed) \u2014 gzip"
+   "desc": "Cyberlink graph (2.7M links, indexed) \u2014 gzip"
   },
   "delegations.csv": {
    "cid": "QmS1qdQy1ipkB7TxzCeLTx7UnCuxud1nuoTR4DCcjX8Rwm",
@@ -24,29 +24,41 @@
    "bytes": 6174230,
    "desc": "Every delegation: delegator, validator, shares, boot"
   },
+  "holdings.jsonl": {
+   "cid": "Qmbme6AbTKjH4WTLogawg2uSddwBHcGTmhAh3cnu34FYQo",
+   "sha256": "cd175a02db34865f34a5cd5d44f5a76f7d5232115d31fb572b550895297f1f89",
+   "bytes": 13224179,
+   "desc": "Per-account breakdown: liquid, delegated, undelegating, pools (LP decomposed into underlying tokens)"
+  },
+  "manifest.json": {
+   "cid": "",
+   "sha256": "874bbfd16e164e54052b0ca3415a26feae20fb25ec8475c596b824c148365b60",
+   "bytes": 2656,
+   "desc": ""
+  },
   "passports.jsonl": {
    "cid": "QmTSZ1DLV61ATVMRBmqVnebDjhVG52gLijwPQYzBxq3jQQ",
    "sha256": "4d9d5a00a4811ad04bbe74d11310c0fcaffbee367c3f1de325b5a9966a34a7ed",
    "bytes": 18164590,
-   "desc": "All 47,837 moon passports: nickname, owner, extension (avatar/resolver)"
+   "desc": "All 47,837 moon passports: nickname, owner, extension"
   },
   "pools.json": {
    "cid": "QmbtuP9wdD6KzMxVWCb9R1Un8XAkBEnWwMeB2P9B3qLbUr",
    "sha256": "1cc6c5fa5d14a965232ab0acab5d7eca12cfbb46b878bd8b98e6028fb9a440a1",
    "bytes": 15643,
-   "desc": "All 30 liquidity pools: reserves and implied prices at halt"
+   "desc": "All liquidity pools: reserves + prices at halt"
   },
   "pubkeys.csv": {
    "cid": "QmXFT8ULxLqYV1jp388YFcXUCvJdCR8ptW2yJEQsNdp2sG",
    "sha256": "4f68852a300129364f206ca5dcb855dd0dbcc580a2a8a532a41db87ac396dc1c",
    "bytes": 7059680,
-   "desc": "61,675 account public keys (for future claims)"
+   "desc": "61,675 account public keys (future claims)"
   },
   "state_export.json.gz": {
    "cid": "QmY8u2gHR2i5fhQWpkgdyXqByW1F6kokDqd4hCXReQDK2D",
    "sha256": "88982db2e97b2ce3871b0904d094a1da61f6d67a3beb11005dcbb90bf737b431",
    "bytes": 77541012,
-   "desc": "Full chain state at halt height (auth, bank, staking, wasm, all modules) \u2014 gzip"
+   "desc": "Full chain state at halt (all modules) \u2014 gzip"
   },
   "supply.json": {
    "cid": "QmcyWzweYjtxM9cf1YFNh9c6Qg8yhe6yy4ghXC7wVasPaM",
@@ -58,7 +70,7 @@
    "cid": "QmQFWhxhJmKEK6QSwL2oKCaeLxLH8NM4fUDFD4tJLMcTVu",
    "sha256": "7907c8a8d26daf0df28cedb2e020cb406413c22a1160666d39a83c16d682eb4c",
    "bytes": 148497,
-   "desc": "Validator set with full metadata"
+   "desc": "Validator set with metadata"
   }
  }
 }

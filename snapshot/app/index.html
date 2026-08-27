@@ -35,8 +35,11 @@
   .hint{color:var(--mut);font-size:12px;margin-top:8px;font-family:ui-monospace,monospace}
   .addr{font-family:ui-monospace,monospace;font-size:12px;color:var(--cyan);word-break:break-all;margin:12px 0}
   .bal{margin-top:14px}
-  .bal .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--ln);font-family:ui-monospace,monospace;font-size:14px}
-  .bal .row .d{color:var(--grn)}
+  .bal .tok{margin-bottom:6px}
+  .bal .row{display:flex;justify-content:space-between;padding:8px 0 4px;border-bottom:1px solid var(--ln);font-family:ui-monospace,monospace;font-size:15px}
+  .bal .row .d{color:var(--grn);font-weight:700}
+  .bal .row .tot{font-weight:700}
+  .bal .sub{display:flex;justify-content:space-between;padding:2px 0 2px 18px;font-family:ui-monospace,monospace;font-size:12px;color:var(--mut)}
   .err{color:var(--red);font-family:ui-monospace,monospace;font-size:13px;margin-top:10px}
   .foot{margin-top:40px;color:var(--mut);font-size:12px;font-family:ui-monospace,monospace}
   .foot a{color:var(--cyan);text-decoration:none}
@@ -91,19 +94,21 @@ const GW = "https://gateway.pinata.cloud/ipfs";
 const CIDS = {
  "state_export.json.gz":"QmY8u2gHR2i5fhQWpkgdyXqByW1F6kokDqd4hCXReQDK2D",
  "cyberlinks_indexed.csv.gz":"QmTfEcB2St3XEfC5xq14v5ybNQ4wzZfUMRkEZfqzQTXpe6",
- "balances.csv":"QmYSRj4Wwu9tXq8DLLcVQYGEvcxPSfdBQzN6VQ9zttVES2",
+ "balances.csv":"QmTsM6YazUmAkz7sNbL1NY88cMciZpiTWHZEDCo3gZVo1h",
+ "holdings.jsonl":"Qmbme6AbTKjH4WTLogawg2uSddwBHcGTmhAh3cnu34FYQo",
  "passports.jsonl":"QmTSZ1DLV61ATVMRBmqVnebDjhVG52gLijwPQYzBxq3jQQ",
  "pools.json":"QmbtuP9wdD6KzMxVWCb9R1Un8XAkBEnWwMeB2P9B3qLbUr",
  "delegations.csv":"QmS1qdQy1ipkB7TxzCeLTx7UnCuxud1nuoTR4DCcjX8Rwm",
  "validators.json":"QmQFWhxhJmKEK6QSwL2oKCaeLxLH8NM4fUDFD4tJLMcTVu",
  "pubkeys.csv":"QmXFT8ULxLqYV1jp388YFcXUCvJdCR8ptW2yJEQsNdp2sG",
  "supply.json":"QmcyWzweYjtxM9cf1YFNh9c6Qg8yhe6yy4ghXC7wVasPaM",
- "manifest.json":"QmfYy3UWWtGM1Q6rRkyDN5fC9iS7gtFPXeYSQJqZgPv1Py",
+ "manifest.json":"QmVHgUj1o8w3Vi1SPLSL8XYWEGDWPXrV88q5ckVX4TL5pg",
 };
 const DESC = {
  "state_export.json.gz":"full chain state at halt (all modules) — gzip",
  "cyberlinks_indexed.csv.gz":"cyberlink graph: from · to · neuron · height · time · tx — gzip",
- "balances.csv":"every holder of BOOT · H · A · V · TOCYB · PUSSY · LP",
+ "balances.csv":"every holder of every denom — liquid bank balances",
+ "holdings.jsonl":"per-account breakdown: liquid · delegated · pools (LP decomposed into underlying tokens)",
  "passports.jsonl":"47,837 moon passports: nickname · owner · resolver",
  "pools.json":"30 liquidity pools: reserves + prices at halt",
  "delegations.csv":"delegator · validator · shares · boot",
@@ -121,7 +126,7 @@ async function fetchData(f){
 }
 
 // dataset table
-const order=["state_export.json.gz","cyberlinks_indexed.csv.gz","balances.csv","passports.jsonl","pools.json","delegations.csv","validators.json","pubkeys.csv","supply.json"];
+const order=["state_export.json.gz","cyberlinks_indexed.csv.gz","holdings.jsonl","balances.csv","passports.jsonl","pools.json","delegations.csv","validators.json","pubkeys.csv","supply.json"];
 let man={};
 render();
 fetchData("manifest.json").then(r=>r.json()).then(m=>{man=m.files||{};render();}).catch(()=>{});
@@ -185,22 +190,22 @@ async function fromLedger(){
   return address;
 }
 
-// balances index (lazy)
-let BAL=null;
-async function loadBalances(){
-  if(BAL)return BAL;
-  const txt=await (await fetchData("balances.csv")).text();
-  BAL={};
-  const lines=txt.split("\n");
-  for(let i=1;i<lines.length;i++){
-    const [addr,denom,amount]=lines[i].split(",");
-    if(!addr)continue;
-    (BAL[addr]||(BAL[addr]=[])).push([denom,amount]);
+// holdings index (lazy): address -> { denom: {label,liquid,delegated,undelegating,pools,total} }
+let HOLD=null;
+async function loadHoldings(){
+  if(HOLD)return HOLD;
+  const txt=await (await fetchData("holdings.jsonl")).text();
+  HOLD={};
+  for(const line of txt.split("\n")){
+    if(!line.trim())continue;
+    const r=JSON.parse(line);
+    HOLD[r.address]=r.holdings;
   }
-  return BAL;
+  return HOLD;
 }
-const DENOM={boot:"BOOT",hydrogen:"H",milliampere:"A",millivolt:"V",tocyb:"TOCYB"};
-function dname(d){return DENOM[d]|| (d.startsWith("ibc/")?d.slice(0,12)+"…":d.startsWith("factory/")?"LP":d);}
+const N=x=>Number(x).toLocaleString();
+const SUBS=[["liquid","liquid"],["delegated","delegated"],["undelegating","undelegating"],["pools","from pools"]];
+const ORD={BOOT:0,H:1,A:2,V:3,TOCYB:4};
 
 document.getElementById("go").onclick=async()=>{
   const err=document.getElementById("err"),der=document.getElementById("derived"),bal=document.getElementById("bal");
@@ -213,11 +218,24 @@ document.getElementById("go").onclick=async()=>{
     else if(mode==="ledger") addr=await fromLedger();
     if(!addr||!addr.startsWith("bostrom1")){der.textContent="";err.textContent="not a bostrom address";return;}
     der.textContent=addr;
-    bal.innerHTML='<div class="hint">loading snapshot balances…</div>';
-    const B=await loadBalances();
-    const rows=B[addr];
-    if(!rows){bal.innerHTML='<div class="hint">no balance for this address in the snapshot.</div>';return;}
-    bal.innerHTML=rows.map(([d,a])=>`<div class="row"><span class="d">${dname(d)}</span><span>${Number(a).toLocaleString()}</span></div>`).join("");
+    bal.innerHTML='<div class="hint">loading snapshot holdings…</div>';
+    const H=await loadHoldings();
+    const rec=H[addr];
+    if(!rec){bal.innerHTML='<div class="hint">no holdings for this address in the snapshot.</div>';return;}
+    // merge denoms by label (multiple ibc routes of one token collapse)
+    const tok={};
+    for(const d in rec){
+      const h=rec[d], L=h.label;
+      const t=tok[L]||(tok[L]={liquid:0,delegated:0,undelegating:0,pools:0,total:0});
+      for(const k of["liquid","delegated","undelegating","pools","total"]) t[k]+=h[k];
+    }
+    const labels=Object.keys(tok).sort((a,b)=>(ORD[a]??99)-(ORD[b]??99)||(tok[b].total-tok[a].total));
+    bal.innerHTML=labels.map(L=>{
+      const t=tok[L];
+      const subs=SUBS.filter(([k])=>t[k]>0).map(([k,lab])=>
+        `<div class="sub"><span>${lab}</span><span>${N(t[k])}</span></div>`).join("");
+      return `<div class="tok"><div class="row"><span class="d">${L}</span><span class="tot">${N(t.total)}</span></div>${subs}</div>`;
+    }).join("");
   }catch(e){der.textContent="";err.textContent=String(e.message||e);}
 };
 </script>
