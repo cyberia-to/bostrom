@@ -1,0 +1,15 @@
+# cybernode ipfs-cluster pins (io) — our own content-addressed copies.
+# CIDs differ from Pinata (different chunker params, same bytes).
+# The cybernode nodes are swarm-isolated, so these are internal redundancy;
+# public retrieval uses the Pinata CIDs in manifest.json or the HTTPS host.
+QmYFfKuVGtb54HKwyuwBuYMvfNbPfxXhJSm4PCNJNaSNuq  balances.csv
+QmSu1ZCVxqNN7qiXSB99gJBCh4aBcd2vak67jVcbVw35rv  delegations.csv
+QmTQvSCkeEvVafYVAVTQyHkMjrNyApueeHMRNK1ffESiQ4  manifest.json
+QmWRhuxyFEy3azasVmgb3Z398DpgGcqA6EhVunr39z56Qm  passports.jsonl
+QmTNvS18Ariyq2kWAkBJzMoQvjdb6Y3iG93xjXKE91VE29  pools.json
+QmZJPEpq5vxJuifFUueyym1bfjbSyRDJk9ssSPFRGgVQvh  pubkeys.csv
+QmVcWfxMMNo2oGFzV3YepFPt2cFVAtJV1dJsPD9k6Bnyyt  state_export.json.gz
+QmcYnfQjR7J8RoKWwKTYopprd8ZjPfMqdypHWA4awzWBqR  supply.json
+QmaSeeLY5aKMD1X9simwZzExAD55zw9V84nY8WhmpeL1Y7  validators.json
+# cyberlinks_indexed.csv.gz — cluster add reset under load (io overloaded);
+# redundant via Pinata (QmTfEcB2St3XEfC5xq14v5ybNQ4wzZfUMRkEZfqzQTXpe6) + jupiter HTTPS + deimos raw
