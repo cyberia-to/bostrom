@@ -22,6 +22,7 @@
   .desc{color:var(--mut)}
   .sz{color:var(--mut);font-family:ui-monospace,monospace;white-space:nowrap}
   .cid{font-family:ui-monospace,monospace;font-size:11px;color:var(--mut);word-break:break-all}
+  td .ipfs{color:var(--mut);font-size:11px;margin-left:10px}
   .card{background:var(--s1);border:1px solid var(--ln);border-radius:10px;padding:18px}
   .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
   .tab{background:var(--s2);border:1px solid var(--ln);border-radius:20px;padding:6px 15px;cursor:pointer;font-size:13px;color:var(--mut)}
@@ -110,21 +111,28 @@ const DESC = {
  "pubkeys.csv":"61,675 account public keys (for future claims)",
  "supply.json":"total supply per denom",
 };
-const url = f => `${GW}/${CIDS[f]}/${f}`;
+// same-origin file if present (fast), IPFS gateway as the permanent link
+const ipfsUrl = f => `${GW}/${CIDS[f]}/${f}`;
+const localUrl = f => `./${f}`;
+// balances/manifest are read from same-origin first, IPFS fallback
+async function fetchData(f){
+  try{const r=await fetch(localUrl(f));if(r.ok)return r;}catch(e){}
+  return fetch(ipfsUrl(f));
+}
 
 // dataset table
 const order=["state_export.json.gz","cyberlinks_indexed.csv.gz","balances.csv","passports.jsonl","pools.json","delegations.csv","validators.json","pubkeys.csv","supply.json"];
 let man={};
 render();
-fetch(url("manifest.json")).then(r=>r.json()).then(m=>{man=m.files||{};render();}).catch(()=>{});
+fetchData("manifest.json").then(r=>r.json()).then(m=>{man=m.files||{};render();}).catch(()=>{});
 function fmt(b){if(!b)return"";const u=["B","KB","MB","GB"];let i=0;while(b>1024&&i<3){b/=1024;i++}return b.toFixed(b<10&&i>0?1:0)+u[i]}
 function render(){
   const tb=document.querySelector("#files tbody");
   tb.innerHTML=order.map(f=>{
     const sz=man[f]?fmt(man[f].bytes):"";
-    return `<tr><td class="file">${f}</td><td class="desc">${DESC[f]||""}</td><td class="sz">${sz}</td><td><a href="${url(f)}" download>download ↓</a></td></tr>`;
+    return `<tr><td class="file">${f}</td><td class="desc">${DESC[f]||""}</td><td class="sz">${sz}</td><td><a href="${localUrl(f)}" download>download ↓</a><a class="ipfs" href="${ipfsUrl(f)}" title="permanent IPFS copy">ipfs</a></td></tr>`;
   }).join("");
-  document.querySelector("#manlink").innerHTML=`<a href="${url("manifest.json")}">${CIDS["manifest.json"]}</a>`;
+  document.querySelector("#manlink").innerHTML=`<a href="${ipfsUrl("manifest.json")}">${CIDS["manifest.json"]}</a>`;
   document.querySelector("#verify").textContent="each link is <CID>/<filename> on any IPFS gateway — swap gateway.pinata.cloud for ipfs.io or your own node.";
 }
 
@@ -181,7 +189,7 @@ async function fromLedger(){
 let BAL=null;
 async function loadBalances(){
   if(BAL)return BAL;
-  const txt=await (await fetch(url("balances.csv"))).text();
+  const txt=await (await fetchData("balances.csv")).text();
   BAL={};
   const lines=txt.split("\n");
   for(let i=1;i<lines.length;i++){
