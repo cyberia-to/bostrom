@@ -177,8 +177,8 @@ async function fromPriv(hex){
   return addrOf(secp.secp256k1.getPublicKey(pk, true));
 }
 async function fromLedger(){
-  const tp=(await import("https://esm.sh/@ledgerhq/hw-transport-webusb@6.29.4")).default;
-  const Cosmos=(await import("https://esm.sh/@ledgerhq/hw-app-cosmos@6.31.0")).default;
+  const tp=(await import("https://cdn.jsdelivr.net/npm/@ledgerhq/hw-transport-webusb@6.28.1/+esm")).default;
+  const Cosmos=(await import("https://cdn.jsdelivr.net/npm/@ledgerhq/hw-app-cosmos@6.30.0/+esm")).default;
   const transport=await tp.create();
   const app=new Cosmos(transport);
   const {address}=await app.getAddress("m/44'/118'/0'/0/0","bostrom");
