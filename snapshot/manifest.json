@@ -79,5 +79,12 @@
    "bytes": 2951449,
    "desc": "Owner address \u2192 passport nicknames (compact index)"
   }
+ },
+ "supply_audit": {
+  "native_boot_at_halt": 482287925778234,
+  "minted_for_swap": 165120694958077,
+  "total_post_swap": 647408620736311,
+  "mint_ratio_pct": 34.2,
+  "method": "sum over every non-boot denom with a warp quote: supply(denom) x rate_in_boot(denom); pool coins and factory LP excluded (they are claims on reserves already counted in base supplies); rates from prices.json (direct boot pool first, hydrogen-routed otherwise, dust pools below 1e6 micro-units do not quote)"
  }
 }
