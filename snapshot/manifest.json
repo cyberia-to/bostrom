@@ -80,15 +80,15 @@
    "desc": "Owner address \u2192 passport nicknames (compact index)"
   },
   "particles_availability.json": {
-   "cid": "Qmd4x5yyzcXJdRbGAC7hvYrRU2i8SBepS8QSFPkrTiQjwS",
-   "sha256": "5b8f588387a363a957fb81872d1817d1c1a1ba187fd7a156792f1e79f5d3f07e",
-   "bytes": 640,
+   "cid": "QmcqgPqjXTVW7LdTzAshQYaSvkNtifK5jz54dVHP5o1L1r",
+   "sha256": "bbc07355562a26a45c19872d6c1f6eae4ea3bb32d137dd74a211d6cdaa86a219",
+   "bytes": 693,
    "desc": "availability audit over the full particle set: 3,069,134 / 3,143,648 (97.63%) present on the cybernode blockstore"
   },
   "missing_particles.txt.gz": {
-   "cid": "QmStkpz3dM5CCxC28SWeKrJ31oMPb3Vdt9auDYPMBiTHdP",
-   "sha256": "5bd370d9cd5d21910b508e8f4d180508c5d1166ca7efef61f213b49c47f57fb7",
-   "bytes": 1586965,
+   "cid": "QmazTcXKwB4TYAN8gu6LJM83s5KPczM7mtTAVeZDiCAoiS",
+   "sha256": "38301c24cb838985e49a31a8f1d733e6420dcc429c52c499993d7f39813b91f8",
+   "bytes": 2469151,
    "desc": "the 74,513 particle CIDs absent from the cybernode at audit time"
   }
  },
