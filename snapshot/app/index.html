@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <link rel="icon" type="image/png" href="/favicon.png"/>
 <title>bostrom — final snapshot</title>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://bostrom.network"/>
+<meta property="og:title" content="bostrom — final snapshot"/>
+<meta property="og:description" content="the bootloader chain is laid to rest. check any balance by passport name, address, mnemonic or ledger — all onchain tokens will be swapped to BOOT at warp price at halt."/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:site" content="@cyber_devs"/>
+<meta name="description" content="the final snapshot of the bostrom bootloader chain: every dataset content-addressed on IPFS, balance checker, swap value in BOOT at warp prices at halt."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
@@ -146,7 +153,7 @@
 const GW = "https://gateway.pinata.cloud/ipfs";
 const CIDS = {
  "state_export.json.gz":"QmY8u2gHR2i5fhQWpkgdyXqByW1F6kokDqd4hCXReQDK2D",
- "cyberlinks_indexed.csv.gz":"QmTfEcB2St3XEfC5xq14v5ybNQ4wzZfUMRkEZfqzQTXpe6",
+ "cyberlinks_indexed.csv.gz":"QmVBSfi1jxTPkaLFqMbQD3FfTNhYuhkNYDndTGeP6bYxJ2",
  "balances.csv":"QmTsM6YazUmAkz7sNbL1NY88cMciZpiTWHZEDCo3gZVo1h",
  "holdings.jsonl":"QmQkR5jkbXjqCUNB6uj4EWaCRd7oWS7zbkcTWX1ZWtkvqW",
  "prices.json":"Qmbzevge6MmsiYG4s8D58rG21QVh5FF9CXTjCDH72VZYoA",
@@ -157,7 +164,7 @@ const CIDS = {
  "validators.json":"QmQFWhxhJmKEK6QSwL2oKCaeLxLH8NM4fUDFD4tJLMcTVu",
  "pubkeys.csv":"QmXFT8ULxLqYV1jp388YFcXUCvJdCR8ptW2yJEQsNdp2sG",
  "supply.json":"QmcyWzweYjtxM9cf1YFNh9c6Qg8yhe6yy4ghXC7wVasPaM",
- "manifest.json":"QmbUcCNX1xyieZBeqCoVhNf2L2cR8qTaioDHn3ByhVQwVc",
+ "manifest.json":"QmdaiipbTBfL7HwTSeMtMpoLAfnosWuVLXkcemSFp9LGxE",
 };
 const DESC = {
  "state_export.json.gz":"full chain state at halt (all modules) — gzip",
@@ -214,15 +221,11 @@ document.getElementById("clr").onclick=()=>{["pname","addr","mnem","priv"].forEa
 let LIB=null;
 async function libs(){
   if(LIB)return LIB;
-  const [bip39,bip32,secp,sha,rip,base]=await Promise.all([
-    import("https://esm.sh/@scure/bip39@1.3.0"),
-    import("https://esm.sh/@scure/bip32@1.4.0"),
-    import("https://esm.sh/@noble/curves@1.4.0/secp256k1"),
-    import("https://esm.sh/@noble/hashes@1.4.0/sha256"),
-    import("https://esm.sh/@noble/hashes@1.4.0/ripemd160"),
-    import("https://esm.sh/@scure/base@1.1.6"),
-  ]);
-  LIB={bip39,bip32,secp,sha,rip,base};return LIB;
+  // self-hosted bundle (scure bip39/bip32, noble curves/hashes, scure base):
+  // the key path never touches a CDN.
+  const v=await import(`./vendor.js?v=${V}`);
+  LIB={bip39:v.bip39,bip32:v.bip32,secp:v.secp,sha:v.sha,rip:v.rip,base:v.base};
+  return LIB;
 }
 async function addrOf(compressedPub){
   const {sha,rip,base}=await libs();

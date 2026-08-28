@@ -14,7 +14,7 @@
    "desc": "Complete liquid bank balances, every account, every denom"
   },
   "cyberlinks_indexed.csv.gz": {
-   "cid": "QmTfEcB2St3XEfC5xq14v5ybNQ4wzZfUMRkEZfqzQTXpe6",
+   "cid": "QmVBSfi1jxTPkaLFqMbQD3FfTNhYuhkNYDndTGeP6bYxJ2",
    "sha256": "dc5c09319faa7b5f3507b981e720386bbc91bd744be190f2e39b0eff12b5954d",
    "bytes": 162062292,
    "desc": "Cyberlink graph (indexed) \u2014 gzip"
@@ -30,12 +30,6 @@
    "sha256": "05faf8905efe2f37f0705a348d6e0fb1482926e4af3cde8f9a3ca3cfc860e555",
    "bytes": 13333592,
    "desc": "Per-account breakdown: liquid, delegated, undelegating, per-pool (LP decomposed into underlying tokens)"
-  },
-  "manifest.json": {
-   "cid": "",
-   "sha256": "d2ceb2c59d5aa2533f169b7628de2c28358536ddb1cd4a13571fa39f7a9f1bba",
-   "bytes": 2967,
-   "desc": ""
   },
   "passports.jsonl": {
    "cid": "QmTSZ1DLV61ATVMRBmqVnebDjhVG52gLijwPQYzBxq3jQQ",
