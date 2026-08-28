@@ -14,10 +14,10 @@
    "desc": "Complete liquid bank balances, every account, every denom"
   },
   "cyberlinks_indexed.csv.gz": {
-   "cid": "QmVBSfi1jxTPkaLFqMbQD3FfTNhYuhkNYDndTGeP6bYxJ2",
-   "sha256": "dc5c09319faa7b5f3507b981e720386bbc91bd744be190f2e39b0eff12b5954d",
-   "bytes": 162062292,
-   "desc": "Cyberlink graph (indexed) \u2014 gzip"
+   "cid": "QmUFrsLYUK8USpNMEGBbUyi3nTuq12QcLiVWiyVMMVyyFf",
+   "sha256": "e442ff7a0e905591f1bda94dcac89fd350c28824ccc71b56992da1ae0555e4ae",
+   "bytes": 183092951,
+   "desc": "canonical cyberlink graph rebuilt from block events: 2,949,732 links, bit-exact to the on-chain counter"
   },
   "delegations.csv": {
    "cid": "QmRt9HWgGv5UFkZ4q2WYDoXtTj1T9td1DECdvXkbWXP1SY",
@@ -83,13 +83,13 @@
    "cid": "Qmd4x5yyzcXJdRbGAC7hvYrRU2i8SBepS8QSFPkrTiQjwS",
    "sha256": "5b8f588387a363a957fb81872d1817d1c1a1ba187fd7a156792f1e79f5d3f07e",
    "bytes": 640,
-   "desc": "particle availability audit: 2,874,855 / 2,921,240 (98.41%) present on the cybernode blockstore"
+   "desc": "availability audit over the full particle set: 3,069,134 / 3,143,648 (97.63%) present on the cybernode blockstore"
   },
   "missing_particles.txt.gz": {
    "cid": "QmStkpz3dM5CCxC28SWeKrJ31oMPb3Vdt9auDYPMBiTHdP",
    "sha256": "5bd370d9cd5d21910b508e8f4d180508c5d1166ca7efef61f213b49c47f57fb7",
    "bytes": 1586965,
-   "desc": "the 46,385 particle CIDs absent from the cybernode at audit time"
+   "desc": "the 74,513 particle CIDs absent from the cybernode at audit time"
   }
  },
  "supply_audit": {
@@ -123,10 +123,18 @@
   "method": "sum over every non-boot denom with a warp quote except tocyb: supply(denom) x rate_in_boot(denom); pool coins and factory LP excluded (claims on reserves already counted in base supplies); rates from prices.json (direct boot pool first, hydrogen-routed otherwise, dust pools below 1e6 micro-units do not quote)"
  },
  "particles_availability": {
-  "available": 2874855,
-  "missing": 46385,
-  "coverage_pct": 98.41,
+  "available": 3069134,
+  "missing": 74514,
+  "coverage_pct": 97.63,
   "audited_at": "2026-08-28",
   "node": "cybernode io flatfs blockstore"
+ },
+ "graph": {
+  "onchain_cyberlinks": 2949732,
+  "restored_cyberlinks": 2949732,
+  "onchain_particles": 3143650,
+  "restored_particles": 3143650,
+  "method": "full-history scan of 25,120,712 blocks for tx-blocks (5,857,263), then cyberlink events from block_results with self-computed tx hashes; counts match the on-chain graph_stats exactly",
+  "note": "the previously published indexer-based csv carried 15,241 duplicate rows and missed 259,630 links; this rebuild replaces it"
  }
 }

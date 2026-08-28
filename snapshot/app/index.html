@@ -169,7 +169,7 @@ document.addEventListener("click",()=>eco.classList.remove("open"));}
 const GW = "https://gateway.pinata.cloud/ipfs";
 const CIDS = {
  "state_export.json.gz":"QmY8u2gHR2i5fhQWpkgdyXqByW1F6kokDqd4hCXReQDK2D",
- "cyberlinks_indexed.csv.gz":"QmVBSfi1jxTPkaLFqMbQD3FfTNhYuhkNYDndTGeP6bYxJ2",
+ "cyberlinks_indexed.csv.gz":"QmUFrsLYUK8USpNMEGBbUyi3nTuq12QcLiVWiyVMMVyyFf",
  "balances.csv":"QmTsM6YazUmAkz7sNbL1NY88cMciZpiTWHZEDCo3gZVo1h",
  "holdings.jsonl":"QmQkR5jkbXjqCUNB6uj4EWaCRd7oWS7zbkcTWX1ZWtkvqW",
  "prices.json":"Qmbzevge6MmsiYG4s8D58rG21QVh5FF9CXTjCDH72VZYoA",
@@ -182,11 +182,11 @@ const CIDS = {
  "particles_availability.json":"Qmd4x5yyzcXJdRbGAC7hvYrRU2i8SBepS8QSFPkrTiQjwS",
  "missing_particles.txt.gz":"QmStkpz3dM5CCxC28SWeKrJ31oMPb3Vdt9auDYPMBiTHdP",
  "supply.json":"QmcyWzweYjtxM9cf1YFNh9c6Qg8yhe6yy4ghXC7wVasPaM",
- "manifest.json":"Qmb9u8uWhLkEs7XGmKW565sG62aukGrdG1HqUVh5P7HT7f",
+ "manifest.json":"",
 };
 const DESC = {
  "state_export.json.gz":"full chain state at halt (all modules) — gzip",
- "cyberlinks_indexed.csv.gz":"cyberlink graph: from · to · neuron · height · time · tx — gzip",
+ "cyberlinks_indexed.csv.gz":"cyberlink graph rebuilt from block events: 2,949,732 links · bit-exact to the on-chain counter",
  "balances.csv":"every holder of every denom — liquid bank balances",
  "holdings.jsonl":"per-account breakdown: liquid · delegated · per-pool (LP decomposed into underlying tokens)",
  "prices.json":"boot rate per denom from snapshot pool reserves + pool compositions",
@@ -196,8 +196,8 @@ const DESC = {
  "delegations.csv":"delegator · validator · shares · boot",
  "validators.json":"validator set with metadata",
  "pubkeys.csv":"61,675 account public keys (for future claims)",
-"particles_availability.json":"availability audit: 98.41% of graph particles present on the cybernode blockstore",
- "missing_particles.txt.gz":"the 46,385 particle CIDs absent at audit time",
+"particles_availability.json":"availability audit: 97.63% of all 3.14M graph particles present on the cybernode blockstore",
+ "missing_particles.txt.gz":"the 74,513 particle CIDs absent at audit time",
  "supply.json":"total supply per denom",
 };
 // same-origin file if present (fast), IPFS gateway as the permanent link
