@@ -20,9 +20,9 @@
    "desc": "Cyberlink graph (indexed) \u2014 gzip"
   },
   "delegations.csv": {
-   "cid": "QmS1qdQy1ipkB7TxzCeLTx7UnCuxud1nuoTR4DCcjX8Rwm",
-   "sha256": "2c88aa79d93cc2f198d11bcd43b88afe2069075dec8b3b8b684723921a66de9b",
-   "bytes": 6174230,
+   "cid": "QmRt9HWgGv5UFkZ4q2WYDoXtTj1T9td1DECdvXkbWXP1SY",
+   "sha256": "64ff7b5ca8ee84683ab182697c4166cc617d72dae57b2cfcc4983e2c4ca236c6",
+   "bytes": 6174222,
    "desc": "Every delegation: delegator, validator, shares, boot"
   },
   "holdings.jsonl": {
