@@ -26,8 +26,8 @@
    "desc": "Every delegation: delegator, validator, shares, boot"
   },
   "holdings.jsonl": {
-   "cid": "QmTep6pQtbNtrHcPZEXg4Jbx49SmUjWVSn6Lziygy87znG",
-   "sha256": "b3cb3d5cb06d8a4e29d051bedfcca23c6d8fd3b7b5ffd57ba8ec63a6b3e8c5e2",
+   "cid": "QmQkR5jkbXjqCUNB6uj4EWaCRd7oWS7zbkcTWX1ZWtkvqW",
+   "sha256": "05faf8905efe2f37f0705a348d6e0fb1482926e4af3cde8f9a3ca3cfc860e555",
    "bytes": 13333592,
    "desc": "Per-account breakdown: liquid, delegated, undelegating, per-pool (LP decomposed into underlying tokens)"
   },

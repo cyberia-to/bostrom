@@ -34,15 +34,21 @@
   button.ghost{background:var(--s2);color:var(--tx);border:1px solid var(--ln)}
   .hint{color:var(--mut);font-size:12px;margin-top:8px;font-family:ui-monospace,monospace}
   .addr{font-family:ui-monospace,monospace;font-size:12px;color:var(--cyan);word-break:break-all;margin:12px 0}
-  .bal{margin-top:14px}
+  .bal{margin-top:14px;font-family:ui-monospace,monospace}
   .bal .tok{margin-bottom:6px}
-  .bal .row{display:flex;justify-content:space-between;padding:8px 0 4px;border-bottom:1px solid var(--ln);font-family:ui-monospace,monospace;font-size:15px}
+  .bal .row,.bal .sub,.bal .cols{display:grid;grid-template-columns:minmax(120px,1fr) minmax(170px,auto) minmax(150px,190px);column-gap:16px;align-items:baseline}
+  .bal .row{padding:8px 0 4px;border-bottom:1px solid var(--ln);font-size:15px}
   .bal .row .d{color:var(--grn);font-weight:700}
-  .bal .row .tot{font-weight:700}
-  .bal .sub{display:flex;justify-content:space-between;padding:2px 0 2px 18px;font-family:ui-monospace,monospace;font-size:12px;color:var(--mut)}
-  .bal .est{color:var(--mut);font-weight:400;font-size:12px;margin-right:14px}
+  .bal .amt{text-align:right;font-weight:700}
+  .bal .est{text-align:right;color:var(--mut);font-weight:400;font-size:12px}
+  .bal .sub{padding:2px 0;font-size:12px;color:var(--mut)}
+  .bal .sub .lbl{padding-left:18px}
+  .bal .sub .amt,.bal .sub .est{font-weight:400}
+  .bal .cols{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);padding-bottom:4px}
+  .bal .cols span{text-align:right}
+  .bal .cols .lbl{text-align:left}
   .bal .grand{border-bottom:none;border-top:2px solid var(--ln);margin-top:8px;padding-top:10px}
-  .bal .grand .tot{color:var(--grn)}
+  .bal .grand .est{color:var(--grn);font-weight:700;font-size:15px}
   .err{color:var(--red);font-family:ui-monospace,monospace;font-size:13px;margin-top:10px}
   .foot{margin-top:40px;color:var(--mut);font-size:12px;font-family:ui-monospace,monospace}
   .foot a{color:var(--cyan);text-decoration:none}
@@ -101,7 +107,7 @@ const CIDS = {
  "state_export.json.gz":"QmY8u2gHR2i5fhQWpkgdyXqByW1F6kokDqd4hCXReQDK2D",
  "cyberlinks_indexed.csv.gz":"QmTfEcB2St3XEfC5xq14v5ybNQ4wzZfUMRkEZfqzQTXpe6",
  "balances.csv":"QmTsM6YazUmAkz7sNbL1NY88cMciZpiTWHZEDCo3gZVo1h",
- "holdings.jsonl":"QmTep6pQtbNtrHcPZEXg4Jbx49SmUjWVSn6Lziygy87znG",
+ "holdings.jsonl":"QmQkR5jkbXjqCUNB6uj4EWaCRd7oWS7zbkcTWX1ZWtkvqW",
  "prices.json":"Qmbzevge6MmsiYG4s8D58rG21QVh5FF9CXTjCDH72VZYoA",
  "passports.jsonl":"QmTSZ1DLV61ATVMRBmqVnebDjhVG52gLijwPQYzBxq3jQQ",
  "pools.json":"QmbtuP9wdD6KzMxVWCb9R1Un8XAkBEnWwMeB2P9B3qLbUr",
@@ -109,7 +115,7 @@ const CIDS = {
  "validators.json":"QmQFWhxhJmKEK6QSwL2oKCaeLxLH8NM4fUDFD4tJLMcTVu",
  "pubkeys.csv":"QmXFT8ULxLqYV1jp388YFcXUCvJdCR8ptW2yJEQsNdp2sG",
  "supply.json":"QmcyWzweYjtxM9cf1YFNh9c6Qg8yhe6yy4ghXC7wVasPaM",
- "manifest.json":"QmXetW7CqNNsp3nNBCogAZEN6Y7zYrkc9L4BMpVfQkZwHT",
+ "manifest.json":"QmcFoYt6Ed66xxQBFD6udnSX82JRyHUP3wcFjUpYCb2DEx",
 };
 const DESC = {
  "state_export.json.gz":"full chain state at halt (all modules) — gzip",
@@ -125,8 +131,9 @@ const DESC = {
  "supply.json":"total supply per denom",
 };
 // same-origin file if present (fast), IPFS gateway as the permanent link
+const V="4"; // bump to bust browser caches when data format changes
 const ipfsUrl = f => `${GW}/${CIDS[f]}/${f}`;
-const localUrl = f => `./${f}`;
+const localUrl = f => `./${f}?v=${V}`;
 // balances/manifest are read from same-origin first, IPFS fallback
 async function fetchData(f){
   try{const r=await fetch(localUrl(f));if(r.ok)return r;}catch(e){}
@@ -244,32 +251,39 @@ document.getElementById("go").onclick=async()=>{
     const H=await loadHoldings();
     const rec=H[addr];
     if(!rec){bal.innerHTML='<div class="hint">no holdings for this address in the snapshot.</div>';return;}
-    // merge denoms by label (multiple ibc routes of one token collapse);
-    // keep the underlying denom for the price lookup
+    // merge denoms by label (ibc routes of one token collapse); boot value
+    // is priced per underlying denom BEFORE the merge, so a dust route can
+    // never lend its rate to the whole token.
+    const rate=d=>{const r=PRICES&&PRICES.rates&&PRICES.rates[d];return r>0?r:null;};
     const tok={};
     for(const d in rec){
       const h=rec[d], L=h.label;
-      const t=tok[L]||(tok[L]={denom:d,liquid:0,delegated:0,undelegating:0,pools:{},total:0});
+      const t=tok[L]||(tok[L]={rate:null,liquid:0,delegated:0,undelegating:0,pools:{},total:0,boot:0,priced:true});
       for(const k of["liquid","delegated","undelegating","total"]) t[k]+=h[k];
       for(const id in h.pools) t.pools[id]=(t.pools[id]||0)+h.pools[id];
+      const r=rate(d);
+      if(r!==null){t.boot+=h.total*r;if(t.rate===null)t.rate=r;}
+      else if(h.total>0)t.priced=false;
     }
     const labels=Object.keys(tok).sort((a,b)=>(ORD[a]??99)-(ORD[b]??99)||(tok[b].total-tok[a].total));
+    const est=v=>v===null?"–":`≈ ${NB(v)}`;
     let grand=0,unpriced=false;
-    const html=labels.map(L=>{
+    const rows=labels.map(L=>{
       const t=tok[L];
+      grand+=t.boot;if(!t.priced)unpriced=true;
+      const r=t.rate;
       const subs=[["liquid","liquid"],["delegated","delegated"],["undelegating","undelegating"]]
         .filter(([k])=>t[k]>0)
-        .map(([k,lab])=>`<div class="sub"><span>${lab}</span><span>${N(t[k])}</span></div>`);
+        .map(([k,lab])=>`<div class="sub"><span class="lbl">${lab}</span><span class="amt">${N(t[k])}</span><span class="est">${r?est(t[k]*r):""}</span></div>`);
       for(const id of Object.keys(t.pools).sort((a,b)=>t.pools[b]-t.pools[a])){
-        if(t.pools[id]>0) subs.push(`<div class="sub"><span>${poolName(id)}</span><span>${N(t.pools[id])}</span></div>`);
+        if(t.pools[id]>0) subs.push(`<div class="sub"><span class="lbl">${poolName(id)}</span><span class="amt">${N(t.pools[id])}</span><span class="est">${r?est(t.pools[id]*r):""}</span></div>`);
       }
-      const bv=bootVal(t.denom,t.total);
-      if(bv===null)unpriced=true;else grand+=bv;
-      const est=L==="BOOT"?"":(bv===null?'<span class="est">–</span>':`<span class="est">≈ ${NB(bv)} BOOT</span>`);
-      return `<div class="tok"><div class="row"><span class="d">${L}</span><span class="tot">${est}${N(t.total)}</span></div>${subs.join("")}</div>`;
+      const tokEst=t.priced||t.boot>0?est(t.boot):"–";
+      return `<div class="tok"><div class="row"><span class="d">${L}</span><span class="amt">${N(t.total)}</span><span class="est">${tokEst}</span></div>${subs.join("")}</div>`;
     }).join("");
-    const totalRow=`<div class="row grand"><span class="d">TOTAL</span><span class="tot">≈ ${NB(grand)} BOOT${unpriced?" +":""}</span></div>`;
-    bal.innerHTML=html+totalRow;
+    const header=`<div class="cols"><span class="lbl">token</span><span>amount</span><span>≈ boot at halt</span></div>`;
+    const totalRow=`<div class="row grand"><span class="d">TOTAL</span><span></span><span class="est" style="white-space:nowrap">≈ ${NB(grand)}${unpriced?" +":""}</span></div>`;
+    bal.innerHTML=header+rows+totalRow;
   }catch(e){der.textContent="";err.textContent=String(e.message||e);}
 };
 </script>

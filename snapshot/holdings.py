@@ -62,9 +62,11 @@ for u in S["staking"]["unbonding_delegations"]:
 
 # ── prices: rate of 1 (micro)unit of denom in (micro)boot ─────────────────
 # direct boot pool wins; otherwise route through hydrogen.
+MIN_RESERVE = 1_000_000  # micro-units; dust pools do not quote
 def pool_rate(p, want, other):
     rw, ro = p["reserves"].get(want, 0), p["reserves"].get(other, 0)
-    return (rw / ro) if rw and ro else None
+    if rw < MIN_RESERVE or ro < MIN_RESERVE: return None
+    return rw / ro
 
 rates = {"boot": 1.0}
 h_rate = None
