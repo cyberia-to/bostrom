@@ -3,16 +3,29 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="icon" type="image/png" href="/favicon.png"/>
 <title>bostrom — final snapshot</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
 <style>
   :root{--bg:#000;--s1:#0b0b0b;--s2:#141414;--ln:#222;--tx:#e8e8e8;--mut:#8b948c;--grn:#22c55e;--cyan:#38bdf8;--amb:#eab308;--red:#e8262e}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--tx);font-family:'Play',system-ui,-apple-system,sans-serif;line-height:1.6}
+  nav{position:sticky;top:0;z-index:10;background:rgba(0,0,0,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--ln)}
+  .navin{max-width:920px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+  .brand{font-family:'Orbitron',sans-serif;font-weight:900;font-size:17px;letter-spacing:1px;color:var(--tx);text-decoration:none;display:flex;align-items:center;gap:8px}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--grn);box-shadow:0 0 8px var(--grn)}
+  .menu{display:flex;align-items:center;gap:26px;font-family:'Orbitron',sans-serif;font-weight:500;font-size:14px}
+  .menu>a,.eco>span{color:#b9c2bb;text-decoration:none;cursor:pointer;letter-spacing:.5px}
+  .menu>a:hover,.eco:hover>span{color:var(--grn)}
+  .eco{position:relative}
+  .eco .dd{display:none;position:absolute;right:0;top:26px;background:var(--s1);border:1px solid var(--ln);border-radius:10px;padding:8px 0;min-width:190px}
+  .eco:hover .dd{display:block}
+  .eco .dd a{display:block;padding:8px 18px;color:var(--tx);text-decoration:none;font-family:'Play',sans-serif;font-size:14px}
+  .eco .dd a:hover{background:rgba(34,197,94,.10);color:var(--grn)}
   .wrap{max-width:920px;margin:0 auto;padding:32px 20px 80px}
-  h1{font-size:26px;margin:0 0 4px;font-weight:800}
+  h1{font-family:'Orbitron',sans-serif;font-size:26px;margin:0 0 4px;font-weight:900;letter-spacing:1px}
   .sub{color:var(--mut);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;margin-bottom:28px}
   h2{font-size:15px;text-transform:uppercase;letter-spacing:2px;color:var(--grn);margin:36px 0 12px;font-family:'JetBrains Mono',ui-monospace,monospace}
   .epitaph{background:var(--s1);border:1px solid var(--ln);border-left:3px solid var(--grn);border-radius:8px;padding:14px 16px;color:var(--mut);font-size:14px;margin-bottom:12px}
@@ -63,6 +76,24 @@
 </style>
 </head>
 <body>
+<nav><div class="navin">
+  <a class="brand" href="/"><span class="dot"></span>BOSTROM</a>
+  <div class="menu">
+    <a href="#balance">Balance</a>
+    <div class="eco"><span>Ecosystem ▾</span>
+      <div class="dd">
+        <a href="https://cyber.page" target="_blank" rel="noopener">cyber.page</a>
+        <a href="https://www.coingecko.com/en/coins/bostrom" target="_blank" rel="noopener">CoinGecko</a>
+        <a href="https://coinmarketcap.com/currencies/bostrom/" target="_blank" rel="noopener">CoinMarketCap</a>
+        <a href="https://www.coinbase.com/price/bostrom" target="_blank" rel="noopener">Coinbase</a>
+        <a href="https://t.me/cyber" target="_blank" rel="noopener">Telegram</a>
+        <a href="https://x.com/cyber_devs" target="_blank" rel="noopener">X</a>
+      </div>
+    </div>
+    <a href="https://cyber.page/bootloader/bostrom" target="_blank" rel="noopener">Docs</a>
+    <a href="https://cyb.ai" target="_blank" rel="noopener">Robot</a>
+  </div>
+</div></nav>
 <div class="wrap">
   <h1>🟢 bostrom — final snapshot</h1>
   <div class="sub">halted at height 25,120,712 · 2026-08-05 08:55 UTC · the bootloader rests</div>
@@ -78,7 +109,7 @@
     so this record outlives every server.
   </div>
 
-  <h2>balance checker</h2>
+  <h2 id="balance">balance checker</h2>
   <div class="card">
     <div class="tabs">
       <div class="tab on" data-m="addr">address</div>
