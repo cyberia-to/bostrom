@@ -119,8 +119,9 @@
     swapping every other onchain token at warp prices mints
     <b>102,912,144,666,169</b> more (+21.3%, mostly H) —
     final total supply <b>585,200,070,444,403 BOOT</b>.
-    TOCYB stands apart: <b>281,405,532,467,645 TOCYB</b> carry over to <b>CYB</b>,
-    outside the BOOT swap.<br/><br/>
+    TOCYB stands apart from the BOOT swap: at genesis <b>281,405,532,467,645 TOCYB</b>
+    become <b>187,416,084,623,451,570 CYB</b> (×666 ≈ 1% of the field cap) —
+    <a href="https://cyber.page/cyber/$cyb/" style="color:var(--cyan)">the $CYB distribution</a>.<br/><br/>
     every dataset below is content-addressed on IPFS — pinned to Pinata and the cybernode —
     so this record outlives every server.
   </div>
@@ -173,7 +174,7 @@ const CIDS = {
  "validators.json":"QmQFWhxhJmKEK6QSwL2oKCaeLxLH8NM4fUDFD4tJLMcTVu",
  "pubkeys.csv":"QmXFT8ULxLqYV1jp388YFcXUCvJdCR8ptW2yJEQsNdp2sG",
  "supply.json":"QmcyWzweYjtxM9cf1YFNh9c6Qg8yhe6yy4ghXC7wVasPaM",
- "manifest.json":"QmYhNUzuT1ZYAtPpiLktBRxQfBcjHUYW2PexP7eEEQF9XJ",
+ "manifest.json":"QmYkvmeugnPHQcUvJtwzJfbg8XWi2kraCJRPdyWEqJuJYh",
 };
 const DESC = {
  "state_export.json.gz":"full chain state at halt (all modules) — gzip",
@@ -347,12 +348,13 @@ document.getElementById("go").onclick=async()=>{
       for(const id of Object.keys(t.pools).sort((a,b)=>t.pools[b]-t.pools[a])){
         if(t.pools[id]>0) subs.push(`<div class="sub"><span class="lbl">${poolName(id)}</span><span class="amt">${N(t.pools[id])}</span><span class="est">${r?est(t.pools[id]*r):""}</span></div>`);
       }
-      const tokEst=L==="TOCYB"?`→ ${N(t.total)} CYB`:(t.priced||t.boot>0?est(t.boot):"–");
+      const tokEst=L==="TOCYB"?`→ ${N(t.total*666)} CYB`:(t.priced||t.boot>0?est(t.boot):"–");
       return `<div class="tok"><div class="row"><span class="d">${L}</span><span class="amt">${N(t.total)}</span><span class="est">${tokEst}</span></div>${subs.join("")}</div>`;
     }).join("");
     const header=`<div class="cols"><span class="lbl">token</span><span>amount</span><span>boot at halt</span></div>`;
-    const cyb=tok["TOCYB"]?tok["TOCYB"].total:0;
-    const hero=(cyb>0?`<div class="hero cyb">${N(cyb)}<span class="unit">CYB</span></div><div class="hero-sub">future CYB · TOCYB carries over 1:1</div>`:"")
+    const tocyb=tok["TOCYB"]?tok["TOCYB"].total:0;
+    const cyb=tocyb*666;
+    const hero=(cyb>0?`<div class="hero cyb">${N(cyb)}<span class="unit">CYB</span></div><div class="hero-sub">genesis CYB · from ${N(tocyb)} TOCYB × 666 · <a href="https://cyber.page/cyber/$cyb/" target="_blank" rel="noopener" style="color:var(--cyan)">why</a></div>`:"")
       +`<div class="hero">${NB(grand)}${unpriced?" +":""}<span class="unit">BOOT</span></div><div class="hero-sub">total swap value · warp prices at halt · TOCYB not included</div>`;
     const nicks=PASS&&PASS[addr];
     const passline=nicks&&nicks.length

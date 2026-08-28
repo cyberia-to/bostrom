@@ -103,8 +103,10 @@
   "total_post_swap_boot": 585200070444403,
   "mint_ratio_pct": 21.3,
   "tocyb_to_cyb": {
-   "supply": 281405532467645,
-   "note": "TOCYB is outside the BOOT swap \u2014 it carries over to CYB 1:1"
+   "tocyb_supply": 281405532467645,
+   "rate": 666,
+   "genesis_cyb": 187416084623451570,
+   "note": "at CYB genesis every TOCYB becomes 666 CYB (~1% of the Goldilocks field cap p=2^64-2^32+1); see https://cyber.page/cyber/$cyb/"
   },
   "method": "sum over every non-boot denom with a warp quote except tocyb: supply(denom) x rate_in_boot(denom); pool coins and factory LP excluded (claims on reserves already counted in base supplies); rates from prices.json (direct boot pool first, hydrogen-routed otherwise, dust pools below 1e6 micro-units do not quote)"
  }
