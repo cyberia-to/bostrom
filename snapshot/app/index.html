@@ -4,37 +4,40 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>bostrom — final snapshot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
 <style>
   :root{--bg:#000;--s1:#0b0b0b;--s2:#141414;--ln:#222;--tx:#e8e8e8;--mut:#8b948c;--grn:#22c55e;--cyan:#38bdf8;--amb:#eab308;--red:#e8262e}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--tx);font-family:'Play',system-ui,-apple-system,sans-serif;line-height:1.6}
   .wrap{max-width:920px;margin:0 auto;padding:32px 20px 80px}
   h1{font-size:26px;margin:0 0 4px;font-weight:800}
-  .sub{color:var(--mut);font-family:ui-monospace,'JetBrains Mono',monospace;font-size:13px;margin-bottom:28px}
-  h2{font-size:15px;text-transform:uppercase;letter-spacing:2px;color:var(--grn);margin:36px 0 12px;font-family:ui-monospace,monospace}
+  .sub{color:var(--mut);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;margin-bottom:28px}
+  h2{font-size:15px;text-transform:uppercase;letter-spacing:2px;color:var(--grn);margin:36px 0 12px;font-family:'JetBrains Mono',ui-monospace,monospace}
   .epitaph{background:var(--s1);border:1px solid var(--ln);border-left:3px solid var(--grn);border-radius:8px;padding:14px 16px;color:var(--mut);font-size:14px;margin-bottom:12px}
   table{width:100%;border-collapse:collapse;font-size:13px}
   th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:top}
-  th{color:var(--mut);font-weight:600;font-family:ui-monospace,monospace;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  th{color:var(--mut);font-weight:600;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
   td a{color:var(--cyan);text-decoration:none}
   td a:hover{text-decoration:underline}
-  .file{font-family:ui-monospace,monospace;color:var(--tx)}
+  .file{font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--tx)}
   .desc{color:var(--mut)}
-  .sz{color:var(--mut);font-family:ui-monospace,monospace;white-space:nowrap}
-  .cid{font-family:ui-monospace,monospace;font-size:11px;color:var(--mut);word-break:break-all}
+  .sz{color:var(--mut);font-family:'JetBrains Mono',ui-monospace,monospace;white-space:nowrap}
+  .cid{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;color:var(--mut);word-break:break-all}
   td .ipfs{color:var(--mut);font-size:11px;margin-left:10px}
   .card{background:var(--s1);border:1px solid var(--ln);border-radius:10px;padding:18px}
   .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
   .tab{background:var(--s2);border:1px solid var(--ln);border-radius:20px;padding:6px 15px;cursor:pointer;font-size:13px;color:var(--mut)}
   .tab.on{background:rgba(34,197,94,.12);border-color:var(--grn);color:var(--grn)}
-  input,textarea{width:100%;background:var(--bg);border:1px solid var(--ln);border-radius:8px;color:var(--tx);padding:11px 12px;font-family:ui-monospace,monospace;font-size:13px}
+  input,textarea{width:100%;background:var(--bg);border:1px solid var(--ln);border-radius:8px;color:var(--tx);padding:11px 12px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px}
   textarea{min-height:70px;resize:vertical}
   button{background:var(--grn);color:#000;border:none;border-radius:8px;padding:11px 20px;font-weight:700;cursor:pointer;font-size:14px;margin-top:12px}
   button:hover{filter:brightness(1.1)}
   button.ghost{background:var(--s2);color:var(--tx);border:1px solid var(--ln)}
-  .hint{color:var(--mut);font-size:12px;margin-top:8px;font-family:ui-monospace,monospace}
-  .addr{font-family:ui-monospace,monospace;font-size:12px;color:var(--cyan);word-break:break-all;margin:12px 0}
-  .bal{margin-top:14px;font-family:ui-monospace,monospace}
+  .hint{color:var(--mut);font-size:12px;margin-top:8px;font-family:'JetBrains Mono',ui-monospace,monospace}
+  .addr{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;color:var(--cyan);word-break:break-all;margin:12px 0}
+  .bal{margin-top:14px;font-family:'JetBrains Mono',ui-monospace,monospace}
   .bal .tok{margin-bottom:6px}
   .bal .row,.bal .sub,.bal .cols{display:grid;grid-template-columns:minmax(120px,1fr) minmax(170px,auto) minmax(150px,190px);column-gap:16px;align-items:baseline}
   .bal .row{padding:8px 0 4px;border-bottom:1px solid var(--ln);font-size:15px}
@@ -49,8 +52,11 @@
   .bal .cols .lbl{text-align:left}
   .bal .grand{border-bottom:none;border-top:2px solid var(--ln);margin-top:8px;padding-top:10px}
   .bal .grand .est{color:var(--grn);font-weight:700;font-size:15px}
-  .err{color:var(--red);font-family:ui-monospace,monospace;font-size:13px;margin-top:10px}
-  .foot{margin-top:40px;color:var(--mut);font-size:12px;font-family:ui-monospace,monospace}
+  .hero{margin:18px 0 4px;text-align:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:32px;font-weight:700;color:var(--grn);letter-spacing:-.5px;word-break:break-all}
+  .hero .unit{font-size:18px;color:var(--tx);font-weight:700;margin-left:6px}
+  .hero-sub{text-align:center;color:var(--mut);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;text-transform:uppercase;letter-spacing:2px;margin-bottom:18px}
+  .err{color:var(--red);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;margin-top:10px}
+  .foot{margin-top:40px;color:var(--mut);font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace}
   .foot a{color:var(--cyan);text-decoration:none}
 </style>
 </head>
@@ -69,10 +75,6 @@
     every dataset below is content-addressed on IPFS — pinned to Pinata and the cybernode —
     so this record outlives every server.
   </div>
-
-  <h2>datasets</h2>
-  <table id="files"><thead><tr><th>file</th><th>what</th><th>size</th><th>download</th></tr></thead><tbody></tbody></table>
-  <div class="hint" id="verify"></div>
 
   <h2>balance checker</h2>
   <div class="card">
@@ -93,6 +95,10 @@
     <div class="err" id="err"></div>
     <div class="hint">the chain is dead — balances are read from the snapshot above, in your browser. keys never leave this page.</div>
   </div>
+
+  <h2>datasets</h2>
+  <table id="files"><thead><tr><th>file</th><th>what</th><th>size</th><th>download</th></tr></thead><tbody></tbody></table>
+  <div class="hint" id="verify"></div>
 
   <div class="foot">
     reproduce every file from an archive node:
@@ -282,8 +288,8 @@ document.getElementById("go").onclick=async()=>{
       return `<div class="tok"><div class="row"><span class="d">${L}</span><span class="amt">${N(t.total)}</span><span class="est">${tokEst}</span></div>${subs.join("")}</div>`;
     }).join("");
     const header=`<div class="cols"><span class="lbl">token</span><span>amount</span><span>≈ boot at halt</span></div>`;
-    const totalRow=`<div class="row grand"><span class="d">TOTAL</span><span></span><span class="est" style="white-space:nowrap">≈ ${NB(grand)}${unpriced?" +":""}</span></div>`;
-    bal.innerHTML=header+rows+totalRow;
+    const hero=`<div class="hero">≈ ${NB(grand)}${unpriced?" +":""}<span class="unit">BOOT</span></div><div class="hero-sub">total swap value · warp prices at halt</div>`;
+    bal.innerHTML=hero+header+rows;
   }catch(e){der.textContent="";err.textContent=String(e.message||e);}
 };
 </script>
