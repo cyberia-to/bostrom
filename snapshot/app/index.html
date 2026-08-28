@@ -151,7 +151,7 @@ const CIDS = {
  "holdings.jsonl":"QmQkR5jkbXjqCUNB6uj4EWaCRd7oWS7zbkcTWX1ZWtkvqW",
  "prices.json":"Qmbzevge6MmsiYG4s8D58rG21QVh5FF9CXTjCDH72VZYoA",
  "passports.jsonl":"QmTSZ1DLV61ATVMRBmqVnebDjhVG52gLijwPQYzBxq3jQQ",
- "passports_by_owner.json":"QmPUoZWfyX9CEeGD7eRe3FxBg8AQ4xTNkyuSzs891MVZok",
+ "passports_by_owner.json":"QmYyH7aZTjW1y5rbfPXE6q9LXz8MpfjB3Q3F5Eb83kdWLk",
  "pools.json":"QmbtuP9wdD6KzMxVWCb9R1Un8XAkBEnWwMeB2P9B3qLbUr",
  "delegations.csv":"QmS1qdQy1ipkB7TxzCeLTx7UnCuxud1nuoTR4DCcjX8Rwm",
  "validators.json":"QmQFWhxhJmKEK6QSwL2oKCaeLxLH8NM4fUDFD4tJLMcTVu",
@@ -174,7 +174,7 @@ const DESC = {
  "supply.json":"total supply per denom",
 };
 // same-origin file if present (fast), IPFS gateway as the permanent link
-const V="4"; // bump to bust browser caches when data format changes
+const V="5"; // bump to bust browser caches when data format changes
 const ipfsUrl = f => `${GW}/${CIDS[f]}/${f}`;
 const localUrl = f => `./${f}?v=${V}`;
 // balances/manifest are read from same-origin first, IPFS fallback
