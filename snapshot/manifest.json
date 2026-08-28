@@ -78,6 +78,12 @@
    "sha256": "7907c8a8d26daf0df28cedb2e020cb406413c22a1160666d39a83c16d682eb4c",
    "bytes": 148497,
    "desc": "Validator set with metadata"
+  },
+  "passports_by_owner.json": {
+   "cid": "QmPUoZWfyX9CEeGD7eRe3FxBg8AQ4xTNkyuSzs891MVZok",
+   "sha256": "7673080ae8161df162c7fdb4bf658ad1834c276f46f8b6fc4fa896de6efd89a7",
+   "bytes": 2719580,
+   "desc": "Owner address \u2192 passport nicknames (compact index)"
   }
  }
 }

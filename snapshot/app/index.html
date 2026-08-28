@@ -55,6 +55,8 @@
   .hero{margin:18px 0 4px;text-align:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:32px;font-weight:700;color:var(--grn);letter-spacing:-.5px;word-break:break-all}
   .hero .unit{font-size:18px;color:var(--tx);font-weight:700;margin-left:6px}
   .hero-sub{text-align:center;color:var(--mut);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;text-transform:uppercase;letter-spacing:2px;margin-bottom:18px}
+  .passline{text-align:center;color:var(--mut);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;margin:-6px 0 18px}
+  .passline b{color:var(--tx);font-weight:700}
   .err{color:var(--red);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;margin-top:10px}
   .foot{margin-top:40px;color:var(--mut);font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace}
   .foot a{color:var(--cyan);text-decoration:none}
@@ -116,12 +118,13 @@ const CIDS = {
  "holdings.jsonl":"QmQkR5jkbXjqCUNB6uj4EWaCRd7oWS7zbkcTWX1ZWtkvqW",
  "prices.json":"Qmbzevge6MmsiYG4s8D58rG21QVh5FF9CXTjCDH72VZYoA",
  "passports.jsonl":"QmTSZ1DLV61ATVMRBmqVnebDjhVG52gLijwPQYzBxq3jQQ",
+ "passports_by_owner.json":"QmPUoZWfyX9CEeGD7eRe3FxBg8AQ4xTNkyuSzs891MVZok",
  "pools.json":"QmbtuP9wdD6KzMxVWCb9R1Un8XAkBEnWwMeB2P9B3qLbUr",
  "delegations.csv":"QmS1qdQy1ipkB7TxzCeLTx7UnCuxud1nuoTR4DCcjX8Rwm",
  "validators.json":"QmQFWhxhJmKEK6QSwL2oKCaeLxLH8NM4fUDFD4tJLMcTVu",
  "pubkeys.csv":"QmXFT8ULxLqYV1jp388YFcXUCvJdCR8ptW2yJEQsNdp2sG",
  "supply.json":"QmcyWzweYjtxM9cf1YFNh9c6Qg8yhe6yy4ghXC7wVasPaM",
- "manifest.json":"QmcFoYt6Ed66xxQBFD6udnSX82JRyHUP3wcFjUpYCb2DEx",
+ "manifest.json":"QmbUcCNX1xyieZBeqCoVhNf2L2cR8qTaioDHn3ByhVQwVc",
 };
 const DESC = {
  "state_export.json.gz":"full chain state at halt (all modules) — gzip",
@@ -129,6 +132,7 @@ const DESC = {
  "balances.csv":"every holder of every denom — liquid bank balances",
  "holdings.jsonl":"per-account breakdown: liquid · delegated · per-pool (LP decomposed into underlying tokens)",
  "prices.json":"boot rate per denom from snapshot pool reserves + pool compositions",
+ "passports_by_owner.json":"owner address → passport nicknames",
  "passports.jsonl":"47,837 moon passports: nickname · owner · resolver",
  "pools.json":"30 liquidity pools: reserves + prices at halt",
  "delegations.csv":"delegator · validator · shares · boot",
@@ -147,7 +151,7 @@ async function fetchData(f){
 }
 
 // dataset table
-const order=["state_export.json.gz","cyberlinks_indexed.csv.gz","holdings.jsonl","prices.json","balances.csv","passports.jsonl","pools.json","delegations.csv","validators.json","pubkeys.csv","supply.json"];
+const order=["state_export.json.gz","cyberlinks_indexed.csv.gz","holdings.jsonl","prices.json","passports_by_owner.json","balances.csv","passports.jsonl","pools.json","delegations.csv","validators.json","pubkeys.csv","supply.json"];
 let man={};
 render();
 fetchData("manifest.json").then(r=>r.json()).then(m=>{man=m.files||{};render();}).catch(()=>{});
@@ -213,14 +217,15 @@ async function fromLedger(){
 
 // holdings index (lazy): address -> { denom: {label,liquid,delegated,undelegating,pools:{id:amt},total} }
 // prices.json: rates (denom -> boot per micro-unit) + pool compositions.
-let HOLD=null,PRICES=null;
+let HOLD=null,PRICES=null,PASS=null;
 async function loadHoldings(){
   if(HOLD)return HOLD;
-  const [txt,pr]=await Promise.all([
+  const [txt,pr,ps]=await Promise.all([
     fetchData("holdings.jsonl").then(r=>r.text()),
     fetchData("prices.json").then(r=>r.json()).catch(()=>null),
+    fetchData("passports_by_owner.json").then(r=>r.json()).catch(()=>null),
   ]);
-  PRICES=pr;
+  PRICES=pr;PASS=ps;
   HOLD={};
   for(const line of txt.split("\n")){
     if(!line.trim())continue;
@@ -289,7 +294,11 @@ document.getElementById("go").onclick=async()=>{
     }).join("");
     const header=`<div class="cols"><span class="lbl">token</span><span>amount</span><span>≈ boot at halt</span></div>`;
     const hero=`<div class="hero">≈ ${NB(grand)}${unpriced?" +":""}<span class="unit">BOOT</span></div><div class="hero-sub">total swap value · warp prices at halt</div>`;
-    bal.innerHTML=hero+header+rows;
+    const nicks=PASS&&PASS[addr];
+    const passline=nicks&&nicks.length
+      ?`<div class="passline">passport${nicks.length>1?"s":""}: ${nicks.map(n=>`<b>${n.replace(/</g,"&lt;")}</b>`).join(" · ")}</div>`
+      :"";
+    bal.innerHTML=hero+passline+header+rows;
   }catch(e){der.textContent="";err.textContent=String(e.message||e);}
 };
 </script>
