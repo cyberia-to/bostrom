@@ -179,8 +179,10 @@ const CIDS = {
  "delegations.csv":"QmRt9HWgGv5UFkZ4q2WYDoXtTj1T9td1DECdvXkbWXP1SY",
  "validators.json":"QmQFWhxhJmKEK6QSwL2oKCaeLxLH8NM4fUDFD4tJLMcTVu",
  "pubkeys.csv":"QmXFT8ULxLqYV1jp388YFcXUCvJdCR8ptW2yJEQsNdp2sG",
+ "particles_availability.json":"Qmd4x5yyzcXJdRbGAC7hvYrRU2i8SBepS8QSFPkrTiQjwS",
+ "missing_particles.txt.gz":"QmStkpz3dM5CCxC28SWeKrJ31oMPb3Vdt9auDYPMBiTHdP",
  "supply.json":"QmcyWzweYjtxM9cf1YFNh9c6Qg8yhe6yy4ghXC7wVasPaM",
- "manifest.json":"QmcMifJFGRerkbwWswVi6bCUbuHWPUciw4cDzhwGF6jGYW",
+ "manifest.json":"Qmb9u8uWhLkEs7XGmKW565sG62aukGrdG1HqUVh5P7HT7f",
 };
 const DESC = {
  "state_export.json.gz":"full chain state at halt (all modules) — gzip",
@@ -194,6 +196,8 @@ const DESC = {
  "delegations.csv":"delegator · validator · shares · boot",
  "validators.json":"validator set with metadata",
  "pubkeys.csv":"61,675 account public keys (for future claims)",
+"particles_availability.json":"availability audit: 98.41% of graph particles present on the cybernode blockstore",
+ "missing_particles.txt.gz":"the 46,385 particle CIDs absent at audit time",
  "supply.json":"total supply per denom",
 };
 // same-origin file if present (fast), IPFS gateway as the permanent link
@@ -207,7 +211,7 @@ async function fetchData(f){
 }
 
 // dataset table
-const order=["state_export.json.gz","cyberlinks_indexed.csv.gz","holdings.jsonl","prices.json","passports_by_owner.json","balances.csv","passports.jsonl","pools.json","delegations.csv","validators.json","pubkeys.csv","supply.json"];
+const order=["state_export.json.gz","cyberlinks_indexed.csv.gz","holdings.jsonl","prices.json","passports_by_owner.json","balances.csv","passports.jsonl","pools.json","delegations.csv","validators.json","pubkeys.csv","particles_availability.json","missing_particles.txt.gz","supply.json"];
 let man={};
 render();
 fetchData("manifest.json").then(r=>r.json()).then(m=>{man=m.files||{};render();}).catch(()=>{});

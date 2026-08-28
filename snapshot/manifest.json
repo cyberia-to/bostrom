@@ -78,6 +78,18 @@
    "sha256": "d6d230c38f2a6457a3b95e7a6fba92d74d41eebb197be40dd6973f87f9b43642",
    "bytes": 2951449,
    "desc": "Owner address \u2192 passport nicknames (compact index)"
+  },
+  "particles_availability.json": {
+   "cid": "Qmd4x5yyzcXJdRbGAC7hvYrRU2i8SBepS8QSFPkrTiQjwS",
+   "sha256": "5b8f588387a363a957fb81872d1817d1c1a1ba187fd7a156792f1e79f5d3f07e",
+   "bytes": 640,
+   "desc": "particle availability audit: 2,874,855 / 2,921,240 (98.41%) present on the cybernode blockstore"
+  },
+  "missing_particles.txt.gz": {
+   "cid": "QmStkpz3dM5CCxC28SWeKrJ31oMPb3Vdt9auDYPMBiTHdP",
+   "sha256": "5bd370d9cd5d21910b508e8f4d180508c5d1166ca7efef61f213b49c47f57fb7",
+   "bytes": 1586965,
+   "desc": "the 46,385 particle CIDs absent from the cybernode at audit time"
   }
  },
  "supply_audit": {
@@ -109,5 +121,12 @@
    "note": "at CYB genesis every TOCYB becomes 666 CYB (~1% of the Goldilocks field cap p=2^64-2^32+1); see https://cyber.page/cyber/$cyb/"
   },
   "method": "sum over every non-boot denom with a warp quote except tocyb: supply(denom) x rate_in_boot(denom); pool coins and factory LP excluded (claims on reserves already counted in base supplies); rates from prices.json (direct boot pool first, hydrogen-routed otherwise, dust pools below 1e6 micro-units do not quote)"
+ },
+ "particles_availability": {
+  "available": 2874855,
+  "missing": 46385,
+  "coverage_pct": 98.41,
+  "audited_at": "2026-08-28",
+  "node": "cybernode io flatfs blockstore"
  }
 }
