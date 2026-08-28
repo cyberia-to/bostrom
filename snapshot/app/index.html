@@ -335,7 +335,7 @@ document.getElementById("go").onclick=async()=>{
       else if(h.total>0)t.priced=false;
     }
     const labels=Object.keys(tok).sort((a,b)=>(ORD[a]??99)-(ORD[b]??99)||(tok[b].total-tok[a].total));
-    const est=v=>v===null?"–":`≈ ${NB(v)}`;
+    const est=v=>v===null?"–":NB(v);
     let grand=0,unpriced=false;
     const rows=labels.map(L=>{
       const t=tok[L];
@@ -350,10 +350,10 @@ document.getElementById("go").onclick=async()=>{
       const tokEst=L==="TOCYB"?`→ ${N(t.total)} CYB`:(t.priced||t.boot>0?est(t.boot):"–");
       return `<div class="tok"><div class="row"><span class="d">${L}</span><span class="amt">${N(t.total)}</span><span class="est">${tokEst}</span></div>${subs.join("")}</div>`;
     }).join("");
-    const header=`<div class="cols"><span class="lbl">token</span><span>amount</span><span>≈ boot at halt</span></div>`;
+    const header=`<div class="cols"><span class="lbl">token</span><span>amount</span><span>boot at halt</span></div>`;
     const cyb=tok["TOCYB"]?tok["TOCYB"].total:0;
     const hero=(cyb>0?`<div class="hero cyb">${N(cyb)}<span class="unit">CYB</span></div><div class="hero-sub">future CYB · TOCYB carries over 1:1</div>`:"")
-      +`<div class="hero">≈ ${NB(grand)}${unpriced?" +":""}<span class="unit">BOOT</span></div><div class="hero-sub">total swap value · warp prices at halt · TOCYB not included</div>`;
+      +`<div class="hero">${NB(grand)}${unpriced?" +":""}<span class="unit">BOOT</span></div><div class="hero-sub">total swap value · warp prices at halt · TOCYB not included</div>`;
     const nicks=PASS&&PASS[addr];
     const passline=nicks&&nicks.length
       ?`<div class="passline">passport${nicks.length>1?"s":""}: ${nicks.map(n=>`<b>${n.replace(/</g,"&lt;")}</b>`).join(" · ")}</div>`
