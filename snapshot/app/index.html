@@ -112,12 +112,14 @@
   <h2 id="balance">balance checker</h2>
   <div class="card">
     <div class="tabs">
-      <div class="tab on" data-m="addr">address</div>
+      <div class="tab on" data-m="name">name</div>
+      <div class="tab" data-m="addr">address</div>
       <div class="tab" data-m="mnem">mnemonic</div>
       <div class="tab" data-m="priv">private key</div>
       <div class="tab" data-m="ledger">ledger</div>
     </div>
-    <div id="in-addr"><input id="addr" placeholder="bostrom1..." autocomplete="off"/></div>
+    <div id="in-name"><input id="pname" placeholder="passport name" autocomplete="off"/></div>
+    <div id="in-addr" style="display:none"><input id="addr" placeholder="bostrom1..." autocomplete="off"/></div>
     <div id="in-mnem" style="display:none"><textarea id="mnem" placeholder="twelve or twenty-four words — derived locally, never sent anywhere"></textarea></div>
     <div id="in-priv" style="display:none"><input id="priv" placeholder="private key hex (64 chars) — derived locally"/></div>
     <div id="in-ledger" style="display:none"><div class="hint">connect a Ledger with the Cosmos app open, then check.</div></div>
@@ -198,14 +200,15 @@ function render(){
 }
 
 // tabs
-let mode="addr";
+let mode="name";
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
   mode=t.dataset.m;
   document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===t));
-  ["addr","mnem","priv","ledger"].forEach(m=>document.getElementById("in-"+m).style.display=m===mode?"block":"none");
+  ["name","addr","mnem","priv","ledger"].forEach(m=>document.getElementById("in-"+m).style.display=m===mode?"block":"none");
   document.getElementById("derived").textContent="";document.getElementById("bal").innerHTML="";document.getElementById("err").textContent="";
 });
-document.getElementById("clr").onclick=()=>{["addr","mnem","priv"].forEach(id=>{const e=document.getElementById(id);if(e)e.value=""});document.getElementById("derived").textContent="";document.getElementById("bal").innerHTML="";document.getElementById("err").textContent="";};
+["pname","addr","priv"].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener("keydown",ev=>{if(ev.key==="Enter")document.getElementById("go").click();});});
+document.getElementById("clr").onclick=()=>{["pname","addr","mnem","priv"].forEach(id=>{const e=document.getElementById(id);if(e)e.value=""});document.getElementById("derived").textContent="";document.getElementById("bal").innerHTML="";document.getElementById("err").textContent="";};
 
 // pure browser-ESM crypto: noble + scure (no Node deps, derived locally)
 let LIB=null;
@@ -248,7 +251,7 @@ async function fromLedger(){
 
 // holdings index (lazy): address -> { denom: {label,liquid,delegated,undelegating,pools:{id:amt},total} }
 // prices.json: rates (denom -> boot per micro-unit) + pool compositions.
-let HOLD=null,PRICES=null,PASS=null;
+let HOLD=null,PRICES=null,PASS=null,NICK=null;
 async function loadHoldings(){
   if(HOLD)return HOLD;
   const [txt,pr,ps]=await Promise.all([
@@ -283,7 +286,19 @@ document.getElementById("go").onclick=async()=>{
   err.textContent="";bal.innerHTML="";der.textContent="deriving…";
   try{
     let addr;
-    if(mode==="addr") addr=document.getElementById("addr").value.trim();
+    if(mode==="name"){
+      const q=document.getElementById("pname").value.trim().toLowerCase();
+      if(!q){der.textContent="";err.textContent="enter a passport name";return;}
+      der.textContent="looking up…";
+      await loadHoldings(); // brings PASS along
+      if(!NICK){
+        NICK={};
+        for(const o in (PASS||{})) for(const n of PASS[o]) NICK[n.toLowerCase()]=o;
+      }
+      addr=NICK[q];
+      if(!addr){der.textContent="";err.textContent=`passport "${q}" not found in the snapshot`;return;}
+    }
+    else if(mode==="addr") addr=document.getElementById("addr").value.trim();
     else if(mode==="mnem") addr=await fromMnemonic(document.getElementById("mnem").value);
     else if(mode==="priv") addr=await fromPriv(document.getElementById("priv").value);
     else if(mode==="ledger") addr=await fromLedger();
