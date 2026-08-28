@@ -2,8 +2,9 @@
  "chain": "bostrom",
  "halt_height": 25120712,
  "halt_time": "2026-08-05T08:55:00Z",
- "extracted": "2026-08-27",
+ "extracted": "2026-08-28",
  "gateway": "https://gateway.pinata.cloud/ipfs",
+ "site": "https://snapshot.bostrom.network",
  "note": "the bootloader chain, laid to rest. every file is <CID>/<filename> on any IPFS gateway.",
  "files": {
   "balances.csv": {
@@ -16,7 +17,7 @@
    "cid": "QmTfEcB2St3XEfC5xq14v5ybNQ4wzZfUMRkEZfqzQTXpe6",
    "sha256": "dc5c09319faa7b5f3507b981e720386bbc91bd744be190f2e39b0eff12b5954d",
    "bytes": 162062292,
-   "desc": "Cyberlink graph (2.7M links, indexed) \u2014 gzip"
+   "desc": "Cyberlink graph (indexed) \u2014 gzip"
   },
   "delegations.csv": {
    "cid": "QmS1qdQy1ipkB7TxzCeLTx7UnCuxud1nuoTR4DCcjX8Rwm",
@@ -25,15 +26,15 @@
    "desc": "Every delegation: delegator, validator, shares, boot"
   },
   "holdings.jsonl": {
-   "cid": "Qmbme6AbTKjH4WTLogawg2uSddwBHcGTmhAh3cnu34FYQo",
-   "sha256": "cd175a02db34865f34a5cd5d44f5a76f7d5232115d31fb572b550895297f1f89",
-   "bytes": 13224179,
-   "desc": "Per-account breakdown: liquid, delegated, undelegating, pools (LP decomposed into underlying tokens)"
+   "cid": "QmTep6pQtbNtrHcPZEXg4Jbx49SmUjWVSn6Lziygy87znG",
+   "sha256": "b3cb3d5cb06d8a4e29d051bedfcca23c6d8fd3b7b5ffd57ba8ec63a6b3e8c5e2",
+   "bytes": 13333592,
+   "desc": "Per-account breakdown: liquid, delegated, undelegating, per-pool (LP decomposed into underlying tokens)"
   },
   "manifest.json": {
    "cid": "",
-   "sha256": "874bbfd16e164e54052b0ca3415a26feae20fb25ec8475c596b824c148365b60",
-   "bytes": 2656,
+   "sha256": "d2ceb2c59d5aa2533f169b7628de2c28358536ddb1cd4a13571fa39f7a9f1bba",
+   "bytes": 2967,
    "desc": ""
   },
   "passports.jsonl": {
@@ -47,6 +48,12 @@
    "sha256": "1cc6c5fa5d14a965232ab0acab5d7eca12cfbb46b878bd8b98e6028fb9a440a1",
    "bytes": 15643,
    "desc": "All liquidity pools: reserves + prices at halt"
+  },
+  "prices.json": {
+   "cid": "Qmbzevge6MmsiYG4s8D58rG21QVh5FF9CXTjCDH72VZYoA",
+   "sha256": "4f3beffb86331142f4996e9fab4bc1e3b1fff9d840e4de8154003cb7ab13030f",
+   "bytes": 7904,
+   "desc": "Boot rate per denom from snapshot pool reserves + pool compositions"
   },
   "pubkeys.csv": {
    "cid": "QmXFT8ULxLqYV1jp388YFcXUCvJdCR8ptW2yJEQsNdp2sG",

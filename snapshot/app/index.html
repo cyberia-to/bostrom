@@ -40,6 +40,9 @@
   .bal .row .d{color:var(--grn);font-weight:700}
   .bal .row .tot{font-weight:700}
   .bal .sub{display:flex;justify-content:space-between;padding:2px 0 2px 18px;font-family:ui-monospace,monospace;font-size:12px;color:var(--mut)}
+  .bal .est{color:var(--mut);font-weight:400;font-size:12px;margin-right:14px}
+  .bal .grand{border-bottom:none;border-top:2px solid var(--ln);margin-top:8px;padding-top:10px}
+  .bal .grand .tot{color:var(--grn)}
   .err{color:var(--red);font-family:ui-monospace,monospace;font-size:13px;margin-top:10px}
   .foot{margin-top:40px;color:var(--mut);font-size:12px;font-family:ui-monospace,monospace}
   .foot a{color:var(--cyan);text-decoration:none}
@@ -95,20 +98,22 @@ const CIDS = {
  "state_export.json.gz":"QmY8u2gHR2i5fhQWpkgdyXqByW1F6kokDqd4hCXReQDK2D",
  "cyberlinks_indexed.csv.gz":"QmTfEcB2St3XEfC5xq14v5ybNQ4wzZfUMRkEZfqzQTXpe6",
  "balances.csv":"QmTsM6YazUmAkz7sNbL1NY88cMciZpiTWHZEDCo3gZVo1h",
- "holdings.jsonl":"Qmbme6AbTKjH4WTLogawg2uSddwBHcGTmhAh3cnu34FYQo",
+ "holdings.jsonl":"QmTep6pQtbNtrHcPZEXg4Jbx49SmUjWVSn6Lziygy87znG",
+ "prices.json":"Qmbzevge6MmsiYG4s8D58rG21QVh5FF9CXTjCDH72VZYoA",
  "passports.jsonl":"QmTSZ1DLV61ATVMRBmqVnebDjhVG52gLijwPQYzBxq3jQQ",
  "pools.json":"QmbtuP9wdD6KzMxVWCb9R1Un8XAkBEnWwMeB2P9B3qLbUr",
  "delegations.csv":"QmS1qdQy1ipkB7TxzCeLTx7UnCuxud1nuoTR4DCcjX8Rwm",
  "validators.json":"QmQFWhxhJmKEK6QSwL2oKCaeLxLH8NM4fUDFD4tJLMcTVu",
  "pubkeys.csv":"QmXFT8ULxLqYV1jp388YFcXUCvJdCR8ptW2yJEQsNdp2sG",
  "supply.json":"QmcyWzweYjtxM9cf1YFNh9c6Qg8yhe6yy4ghXC7wVasPaM",
- "manifest.json":"QmVHgUj1o8w3Vi1SPLSL8XYWEGDWPXrV88q5ckVX4TL5pg",
+ "manifest.json":"QmXetW7CqNNsp3nNBCogAZEN6Y7zYrkc9L4BMpVfQkZwHT",
 };
 const DESC = {
  "state_export.json.gz":"full chain state at halt (all modules) — gzip",
  "cyberlinks_indexed.csv.gz":"cyberlink graph: from · to · neuron · height · time · tx — gzip",
  "balances.csv":"every holder of every denom — liquid bank balances",
- "holdings.jsonl":"per-account breakdown: liquid · delegated · pools (LP decomposed into underlying tokens)",
+ "holdings.jsonl":"per-account breakdown: liquid · delegated · per-pool (LP decomposed into underlying tokens)",
+ "prices.json":"boot rate per denom from snapshot pool reserves + pool compositions",
  "passports.jsonl":"47,837 moon passports: nickname · owner · resolver",
  "pools.json":"30 liquidity pools: reserves + prices at halt",
  "delegations.csv":"delegator · validator · shares · boot",
@@ -126,7 +131,7 @@ async function fetchData(f){
 }
 
 // dataset table
-const order=["state_export.json.gz","cyberlinks_indexed.csv.gz","holdings.jsonl","balances.csv","passports.jsonl","pools.json","delegations.csv","validators.json","pubkeys.csv","supply.json"];
+const order=["state_export.json.gz","cyberlinks_indexed.csv.gz","holdings.jsonl","prices.json","balances.csv","passports.jsonl","pools.json","delegations.csv","validators.json","pubkeys.csv","supply.json"];
 let man={};
 render();
 fetchData("manifest.json").then(r=>r.json()).then(m=>{man=m.files||{};render();}).catch(()=>{});
@@ -190,11 +195,16 @@ async function fromLedger(){
   return address;
 }
 
-// holdings index (lazy): address -> { denom: {label,liquid,delegated,undelegating,pools,total} }
-let HOLD=null;
+// holdings index (lazy): address -> { denom: {label,liquid,delegated,undelegating,pools:{id:amt},total} }
+// prices.json: rates (denom -> boot per micro-unit) + pool compositions.
+let HOLD=null,PRICES=null;
 async function loadHoldings(){
   if(HOLD)return HOLD;
-  const txt=await (await fetchData("holdings.jsonl")).text();
+  const [txt,pr]=await Promise.all([
+    fetchData("holdings.jsonl").then(r=>r.text()),
+    fetchData("prices.json").then(r=>r.json()).catch(()=>null),
+  ]);
+  PRICES=pr;
   HOLD={};
   for(const line of txt.split("\n")){
     if(!line.trim())continue;
@@ -204,8 +214,17 @@ async function loadHoldings(){
   return HOLD;
 }
 const N=x=>Number(x).toLocaleString();
-const SUBS=[["liquid","liquid"],["delegated","delegated"],["undelegating","undelegating"],["pools","from pools"]];
+const NB=x=>Number(Math.round(x)).toLocaleString();
 const ORD={BOOT:0,H:1,A:2,V:3,TOCYB:4};
+// boot value of `amt` of denom label L — 0-rate denoms show as "–"
+function bootVal(rateKey,amt){
+  const r=PRICES&&PRICES.rates&&PRICES.rates[rateKey];
+  return r?amt*r:null;
+}
+const poolName=id=>{
+  const p=PRICES&&PRICES.pools&&PRICES.pools[id];
+  return p?`pool ${id} · ${p.labels.join("/")}`:`pool ${id}`;
+};
 
 document.getElementById("go").onclick=async()=>{
   const err=document.getElementById("err"),der=document.getElementById("derived"),bal=document.getElementById("bal");
@@ -222,20 +241,32 @@ document.getElementById("go").onclick=async()=>{
     const H=await loadHoldings();
     const rec=H[addr];
     if(!rec){bal.innerHTML='<div class="hint">no holdings for this address in the snapshot.</div>';return;}
-    // merge denoms by label (multiple ibc routes of one token collapse)
+    // merge denoms by label (multiple ibc routes of one token collapse);
+    // keep the underlying denom for the price lookup
     const tok={};
     for(const d in rec){
       const h=rec[d], L=h.label;
-      const t=tok[L]||(tok[L]={liquid:0,delegated:0,undelegating:0,pools:0,total:0});
-      for(const k of["liquid","delegated","undelegating","pools","total"]) t[k]+=h[k];
+      const t=tok[L]||(tok[L]={denom:d,liquid:0,delegated:0,undelegating:0,pools:{},total:0});
+      for(const k of["liquid","delegated","undelegating","total"]) t[k]+=h[k];
+      for(const id in h.pools) t.pools[id]=(t.pools[id]||0)+h.pools[id];
     }
     const labels=Object.keys(tok).sort((a,b)=>(ORD[a]??99)-(ORD[b]??99)||(tok[b].total-tok[a].total));
-    bal.innerHTML=labels.map(L=>{
+    let grand=0,unpriced=false;
+    const html=labels.map(L=>{
       const t=tok[L];
-      const subs=SUBS.filter(([k])=>t[k]>0).map(([k,lab])=>
-        `<div class="sub"><span>${lab}</span><span>${N(t[k])}</span></div>`).join("");
-      return `<div class="tok"><div class="row"><span class="d">${L}</span><span class="tot">${N(t.total)}</span></div>${subs}</div>`;
+      const subs=[["liquid","liquid"],["delegated","delegated"],["undelegating","undelegating"]]
+        .filter(([k])=>t[k]>0)
+        .map(([k,lab])=>`<div class="sub"><span>${lab}</span><span>${N(t[k])}</span></div>`);
+      for(const id of Object.keys(t.pools).sort((a,b)=>t.pools[b]-t.pools[a])){
+        if(t.pools[id]>0) subs.push(`<div class="sub"><span>${poolName(id)}</span><span>${N(t.pools[id])}</span></div>`);
+      }
+      const bv=bootVal(t.denom,t.total);
+      if(bv===null)unpriced=true;else grand+=bv;
+      const est=L==="BOOT"?"":(bv===null?'<span class="est">–</span>':`<span class="est">≈ ${NB(bv)} BOOT</span>`);
+      return `<div class="tok"><div class="row"><span class="d">${L}</span><span class="tot">${est}${N(t.total)}</span></div>${subs.join("")}</div>`;
     }).join("");
+    const totalRow=`<div class="row grand"><span class="d">TOTAL</span><span class="tot">≈ ${NB(grand)} BOOT${unpriced?" +":""}</span></div>`;
+    bal.innerHTML=html+totalRow;
   }catch(e){der.textContent="";err.textContent=String(e.message||e);}
 };
 </script>
