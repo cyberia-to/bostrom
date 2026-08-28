@@ -10,12 +10,12 @@ in [[bostrom/genesis]] we allocated 70% of $BOOT and $CYB for [[cybergift]]
 
 current state of public affairs:
 
-- [[cybergift]] multisig under [[cybercongress]] control: 603T [[$BOOT]] and 700T [[$C]]
+- [[cybergift]] multisig under [[cybercongress]] control: 603T [[$BOOT]] and 700T [[$TOCYB]]
 - transfered to [[cybergift]] by [[cybercongress]]: 97T [[$BOOT]]
 - released or releasable [[cybergift]]: 58T [[$BOOT]]
 - [[cybergift]] [[prog]]: claimed 148T [[$BOOT]]
-- [[senate]]: ~56T [[$BOOT]] and 50T [[$C]]
-- [[great web foundation]] multisig under [[cybercongress]] control: 50T [[$BOOT]] and [[$C]]
+- [[senate]]: ~56T [[$BOOT]] and 50T [[$TOCYB]]
+- [[great web foundation]] multisig under [[cybercongress]] control: 50T [[$BOOT]] and [[$TOCYB]]
 - [[cyb/avatar]] [[prog]] under [[cybercongress]] multisig: ~9T [[$BOOT]]
 
 my proposal is two understand how could be transition from here
