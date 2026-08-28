@@ -72,6 +72,7 @@
   .bal .cols .lbl{text-align:left}
   .bal .grand{border-bottom:none;border-top:2px solid var(--ln);margin-top:8px;padding-top:10px}
   .bal .grand .est{color:var(--grn);font-weight:700;font-size:15px}
+  .hero.cyb{color:var(--cyan)}
   .hero{margin:18px 0 4px;text-align:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:32px;font-weight:700;color:var(--grn);letter-spacing:-.5px;word-break:break-all}
   .hero .unit{font-size:18px;color:var(--tx);font-weight:700;margin-left:6px}
   .hero-sub{text-align:center;color:var(--mut);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;text-transform:uppercase;letter-spacing:2px;margin-bottom:18px}
@@ -112,10 +113,14 @@
     the chain is laid to rest. this snapshot is the foundation for something bigger.
     congrats — if you are in, you are already part of history:
     <b>all onchain tokens will be swapped to BOOT at Warp price at halt</b>.<br/><br/>
-    supply audit: native supply at halt — <b>482,287,925,778,234 BOOT</b>;
+    supply audit: native supply at halt — <b>482,287,925,778,234 BOOT</b>,
+    of which <b>30,031,817,136,618</b> sit in IBC escrows
+    (29,948,781,923,024 on the osmosis channel-2 — their vouchers live on osmosis);
     swapping every other onchain token at warp prices mints
-    <b>165,120,694,958,077</b> more (+34.2%, mostly H and TOCYB) —
-    final total supply <b>647,408,620,736,311 BOOT</b>.<br/><br/>
+    <b>102,912,144,666,169</b> more (+21.3%, mostly H) —
+    final total supply <b>585,200,070,444,403 BOOT</b>.
+    TOCYB stands apart: <b>281,405,532,467,645 TOCYB</b> carry over to <b>CYB</b>,
+    outside the BOOT swap.<br/><br/>
     every dataset below is content-addressed on IPFS — pinned to Pinata and the cybernode —
     so this record outlives every server.
   </div>
@@ -168,7 +173,7 @@ const CIDS = {
  "validators.json":"QmQFWhxhJmKEK6QSwL2oKCaeLxLH8NM4fUDFD4tJLMcTVu",
  "pubkeys.csv":"QmXFT8ULxLqYV1jp388YFcXUCvJdCR8ptW2yJEQsNdp2sG",
  "supply.json":"QmcyWzweYjtxM9cf1YFNh9c6Qg8yhe6yy4ghXC7wVasPaM",
- "manifest.json":"QmNknxPfpQBLN7haJfgLBuwsMfFbC46z41UUHyJS8RF1xd",
+ "manifest.json":"QmYhNUzuT1ZYAtPpiLktBRxQfBcjHUYW2PexP7eEEQF9XJ",
 };
 const DESC = {
  "state_export.json.gz":"full chain state at halt (all modules) — gzip",
@@ -277,7 +282,7 @@ async function loadHoldings(){
 }
 const N=x=>Number(x).toLocaleString();
 const NB=x=>Number(Math.round(x)).toLocaleString();
-const ORD={BOOT:0,H:1,A:2,V:3,TOCYB:4,PUSSY:5,"LP-PUSSY":6,ATOM:7,OSMO:8};
+const ORD={TOCYB:0,BOOT:1,H:2,A:3,V:4,PUSSY:5,"LP-PUSSY":6,ATOM:7,OSMO:8};
 // boot value of `amt` of denom label L — 0-rate denoms show as "–"
 function bootVal(rateKey,amt){
   const r=PRICES&&PRICES.rates&&PRICES.rates[rateKey];
@@ -334,19 +339,21 @@ document.getElementById("go").onclick=async()=>{
     let grand=0,unpriced=false;
     const rows=labels.map(L=>{
       const t=tok[L];
-      grand+=t.boot;if(!t.priced)unpriced=true;
-      const r=t.rate;
+      if(L!=="TOCYB"){grand+=t.boot;if(!t.priced)unpriced=true;}
+      const r=L==="TOCYB"?null:t.rate;
       const subs=[["liquid","liquid"],["delegated","delegated"],["undelegating","undelegating"]]
         .filter(([k])=>t[k]>0)
         .map(([k,lab])=>`<div class="sub"><span class="lbl">${lab}</span><span class="amt">${N(t[k])}</span><span class="est">${r?est(t[k]*r):""}</span></div>`);
       for(const id of Object.keys(t.pools).sort((a,b)=>t.pools[b]-t.pools[a])){
         if(t.pools[id]>0) subs.push(`<div class="sub"><span class="lbl">${poolName(id)}</span><span class="amt">${N(t.pools[id])}</span><span class="est">${r?est(t.pools[id]*r):""}</span></div>`);
       }
-      const tokEst=t.priced||t.boot>0?est(t.boot):"–";
+      const tokEst=L==="TOCYB"?`→ ${N(t.total)} CYB`:(t.priced||t.boot>0?est(t.boot):"–");
       return `<div class="tok"><div class="row"><span class="d">${L}</span><span class="amt">${N(t.total)}</span><span class="est">${tokEst}</span></div>${subs.join("")}</div>`;
     }).join("");
     const header=`<div class="cols"><span class="lbl">token</span><span>amount</span><span>≈ boot at halt</span></div>`;
-    const hero=`<div class="hero">≈ ${NB(grand)}${unpriced?" +":""}<span class="unit">BOOT</span></div><div class="hero-sub">total swap value · warp prices at halt</div>`;
+    const cyb=tok["TOCYB"]?tok["TOCYB"].total:0;
+    const hero=(cyb>0?`<div class="hero cyb">${N(cyb)}<span class="unit">CYB</span></div><div class="hero-sub">future CYB · TOCYB carries over 1:1</div>`:"")
+      +`<div class="hero">≈ ${NB(grand)}${unpriced?" +":""}<span class="unit">BOOT</span></div><div class="hero-sub">total swap value · warp prices at halt · TOCYB not included</div>`;
     const nicks=PASS&&PASS[addr];
     const passline=nicks&&nicks.length
       ?`<div class="passline">passport${nicks.length>1?"s":""}: ${nicks.map(n=>`<b>${n.replace(/</g,"&lt;")}</b>`).join(" · ")}</div>`

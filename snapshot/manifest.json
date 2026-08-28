@@ -82,9 +82,30 @@
  },
  "supply_audit": {
   "native_boot_at_halt": 482287925778234,
-  "minted_for_swap": 165120694958077,
-  "total_post_swap": 647408620736311,
-  "mint_ratio_pct": 34.2,
-  "method": "sum over every non-boot denom with a warp quote: supply(denom) x rate_in_boot(denom); pool coins and factory LP excluded (they are claims on reserves already counted in base supplies); rates from prices.json (direct boot pool first, hydrogen-routed otherwise, dust pools below 1e6 micro-units do not quote)"
+  "ibc_escrow_boot": {
+   "total": 30031817136618,
+   "by_channel": {
+    "channel-2 (osmosis)": 29948781923024,
+    "channel-11 (space-pussy)": 62808078802,
+    "channel-8 (cosmoshub)": 19596460041,
+    "channel-12": 43201139,
+    "channel-4": 505000005,
+    "channel-5": 70976865,
+    "channel-10": 6120750,
+    "channel-13": 4364982,
+    "channel-9": 1000003,
+    "channel-14": 9998,
+    "channel-6": 1009
+   },
+   "note": "boot locked in ibc-go escrow accounts (bech32(sha256(ics20-1|0x00|transfer/channel-N)[:20])); the matching vouchers circulate on the counterparty chains"
+  },
+  "minted_for_swap_ex_tocyb": 102912144666169,
+  "total_post_swap_boot": 585200070444403,
+  "mint_ratio_pct": 21.3,
+  "tocyb_to_cyb": {
+   "supply": 281405532467645,
+   "note": "TOCYB is outside the BOOT swap \u2014 it carries over to CYB 1:1"
+  },
+  "method": "sum over every non-boot denom with a warp quote except tocyb: supply(denom) x rate_in_boot(denom); pool coins and factory LP excluded (claims on reserves already counted in base supplies); rates from prices.json (direct boot pool first, hydrogen-routed otherwise, dust pools below 1e6 micro-units do not quote)"
  }
 }
