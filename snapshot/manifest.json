@@ -127,7 +127,22 @@
   "missing": 74514,
   "coverage_pct": 97.63,
   "audited_at": "2026-08-28",
-  "node": "cybernode io flatfs blockstore"
+  "node": "cybernode io flatfs blockstore",
+  "full_dag_audit": {
+   "date": "2026-09-04",
+   "method": "every particle's DAG walked to the leaves over the cybernode flatfs blockstore; 16,984,069 unique blocks, depth 8",
+   "total_content_bytes": 356673674907,
+   "fully_available": 3068704,
+   "fully_available_pct": 97.62,
+   "torn_particles": 430,
+   "missing_child_blocks": 125807,
+   "missing_roots": 74514,
+   "heaviest_particle": {
+    "cid": "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+    "bytes": 188110060000,
+    "note": "the 2017 Wikipedia IPFS mirror, linked whole \u2014 over half the corpus weight"
+   }
+  }
  },
  "graph": {
   "onchain_cyberlinks": 2949732,
