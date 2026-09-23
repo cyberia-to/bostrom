@@ -136,15 +136,19 @@ def cmd_pubkeys():
         if n % 20000 == 0: print(f"  {n} accounts", flush=True)
     print(f"pubkeys.csv done ({n})")
 
-def cmd_manifest():
-    files = sorted(f for f in os.listdir(OUT) if os.path.isfile(f"{OUT}/{f}") and f != "manifest.json")
+def build_manifest(out_dir):
+    files = sorted(f for f in os.listdir(out_dir) if os.path.isfile(f"{out_dir}/{f}") and f != "manifest.json")
     man = {"chain_id": "bostrom", "final_height": 25120712,
            "final_block_time": "2026-08-05T08:55:00Z",
            "method": "https://github.com/cyberia-to/bootloader/tree/main/snapshot",
            "files": {}}
     for f in files:
-        h = hashlib.sha256(open(f"{OUT}/{f}", "rb").read()).hexdigest()
-        man["files"][f] = {"sha256": h, "bytes": os.path.getsize(f"{OUT}/{f}")}
+        h = hashlib.sha256(open(f"{out_dir}/{f}", "rb").read()).hexdigest()
+        man["files"][f] = {"sha256": h, "bytes": os.path.getsize(f"{out_dir}/{f}")}
+    return man
+
+def cmd_manifest():
+    man = build_manifest(OUT)
     json.dump(man, open(f"{OUT}/manifest.json", "w"), indent=1)
     print(json.dumps(man, indent=1))
 

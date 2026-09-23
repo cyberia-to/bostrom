@@ -1,3 +1,4 @@
+import hashlib
 import io
 import json
 import os
@@ -7,7 +8,7 @@ import unittest
 from unittest import mock
 
 import extract
-from extract import is_extra_denom, pool_price, resolve_base_account
+from extract import build_manifest, is_extra_denom, pool_price, resolve_base_account
 
 
 class _FakeResponse:
@@ -222,6 +223,62 @@ class CmdPoolsTests(_OutDirTestCase):
             extract.cmd_pools()
         written = self.read_json("pools.json")
         self.assertEqual([w["id"] for w in written], ["1", "2"])
+
+
+class BuildManifestTests(unittest.TestCase):
+    def test_hashes_and_sizes_match_file_content(self):
+        with tempfile.TemporaryDirectory() as d:
+            with open(f"{d}/supply.json", "wb") as f:
+                f.write(b"content-a")
+            man = build_manifest(d)
+            self.assertEqual(
+                man["files"]["supply.json"]["sha256"],
+                hashlib.sha256(b"content-a").hexdigest(),
+            )
+            self.assertEqual(man["files"]["supply.json"]["bytes"], len(b"content-a"))
+
+    def test_excludes_its_own_output_file(self):
+        with tempfile.TemporaryDirectory() as d:
+            open(f"{d}/supply.json", "wb").close()
+            open(f"{d}/manifest.json", "wb").close()
+            man = build_manifest(d)
+            self.assertNotIn("manifest.json", man["files"])
+
+    def test_excludes_subdirectories(self):
+        with tempfile.TemporaryDirectory() as d:
+            open(f"{d}/supply.json", "wb").close()
+            os.makedirs(f"{d}/subdir")
+            man = build_manifest(d)
+            self.assertEqual(list(man["files"]), ["supply.json"])
+
+    def test_file_order_is_sorted_and_deterministic(self):
+        with tempfile.TemporaryDirectory() as d:
+            for name in ["pubkeys.csv", "balances.json", "supply.json"]:
+                open(f"{d}/{name}", "wb").close()
+            man = build_manifest(d)
+            self.assertEqual(
+                list(man["files"]), ["balances.json", "pubkeys.csv", "supply.json"]
+            )
+
+    def test_empty_directory_yields_empty_files(self):
+        with tempfile.TemporaryDirectory() as d:
+            man = build_manifest(d)
+            self.assertEqual(man["files"], {})
+
+    def test_fixed_genesis_metadata(self):
+        with tempfile.TemporaryDirectory() as d:
+            man = build_manifest(d)
+            self.assertEqual(man["chain_id"], "bostrom")
+            self.assertEqual(man["final_height"], 25120712)
+
+
+class CmdManifestTests(_OutDirTestCase):
+    def test_writes_manifest_json_matching_build_manifest(self):
+        with open(f"{self._tmp}/supply.json", "wb") as f:
+            f.write(b"x")
+        extract.cmd_manifest()
+        on_disk = self.read_json("manifest.json")
+        self.assertEqual(on_disk, build_manifest(self._tmp))
 
 
 if __name__ == "__main__":
