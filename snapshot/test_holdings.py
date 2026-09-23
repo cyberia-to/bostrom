@@ -1,6 +1,6 @@
 import unittest
 
-from holdings import clean, denom_label, pool_rate, compose_rates, MIN_RESERVE
+from holdings import clean, denom_label, pool_rate, compose_rates, compose_account_holdings, MIN_RESERVE
 
 
 class CleanTests(unittest.TestCase):
@@ -84,6 +84,51 @@ class ComposeRatesTests(unittest.TestCase):
 
     def test_no_pools_leaves_only_boot(self):
         self.assertEqual(compose_rates({}), {"boot": 1.0, "hydrogen": 0.0})
+
+
+class ComposeAccountHoldingsTests(unittest.TestCase):
+    def label(self, d):
+        return d.upper()
+
+    def test_plain_liquid_leg(self):
+        rec = compose_account_holdings({"boot": 5}, {}, 0, 0, self.label)
+        self.assertEqual(rec, {"boot": {"label": "BOOT", "liquid": 5, "delegated": 0,
+                                         "undelegating": 0, "pools": {}, "total": 5}})
+
+    def test_pool_coin_decomposes_pro_rata_into_reserve_denoms(self):
+        # holding half the pool-coin supply claims half of each reserve
+        pools = {"lp-bh": {"id": "1", "denoms": ["boot", "hydrogen"],
+                            "reserves": {"boot": 100, "hydrogen": 200}, "supply": 10}}
+        rec = compose_account_holdings({"lp-bh": 5}, pools, 0, 0, self.label)
+        self.assertEqual(rec["boot"]["pools"], {"1": 50})
+        self.assertEqual(rec["hydrogen"]["pools"], {"1": 100})
+        self.assertEqual(rec["boot"]["total"], 50)
+
+    def test_pool_coin_with_zero_supply_contributes_nothing(self):
+        pools = {"lp-bh": {"id": "1", "denoms": ["boot", "hydrogen"],
+                            "reserves": {"boot": 100, "hydrogen": 200}, "supply": 0}}
+        rec = compose_account_holdings({"lp-bh": 5}, pools, 0, 0, self.label)
+        self.assertEqual(rec, {})
+
+    def test_delegated_and_undelegating_join_the_boot_leg(self):
+        rec = compose_account_holdings({}, {}, 30, 7, self.label)
+        self.assertEqual(rec["boot"], {"label": "BOOT", "liquid": 0, "delegated": 30,
+                                        "undelegating": 7, "pools": {}, "total": 37})
+
+    def test_pool_leg_and_delegated_boot_accumulate_in_the_same_bucket(self):
+        pools = {"lp-bx": {"id": "1", "denoms": ["boot", "x"],
+                            "reserves": {"boot": 100, "x": 50}, "supply": 10}}
+        rec = compose_account_holdings({"lp-bx": 2}, pools, 30, 0, self.label)
+        self.assertEqual(rec["boot"]["pools"], {"1": 20})
+        self.assertEqual(rec["boot"]["delegated"], 30)
+        self.assertEqual(rec["boot"]["total"], 50)
+
+    def test_zero_total_denom_is_dropped(self):
+        rec = compose_account_holdings({"boot": 0}, {}, 0, 0, self.label)
+        self.assertEqual(rec, {})
+
+    def test_empty_input_yields_empty_record(self):
+        self.assertEqual(compose_account_holdings({}, {}, 0, 0, self.label), {})
 
 
 if __name__ == "__main__":

@@ -35,6 +35,34 @@ def pool_rate(p, want, other):
     return rw / ro
 
 
+def compose_account_holdings(lq, pools, delegated, undel, label):
+    """one address's per-denom holdings: a liquid pool-coin leg decomposes
+    pro rata into its pool's reserve denoms by pool-coin share; delegated
+    and undelegating boot join the boot leg; a zero-total denom is dropped."""
+    tokens = {}
+
+    def bucket(denom):
+        return tokens.setdefault(denom, {"liquid": 0, "delegated": 0, "undelegating": 0, "pools": {}})
+
+    for d, amt in lq.items():
+        if d in pools:
+            p = pools[d]
+            if p["supply"]:
+                for rd, rv in p["reserves"].items():
+                    bp = bucket(rd)["pools"]
+                    bp[p["id"]] = bp.get(p["id"], 0) + amt * rv // p["supply"]
+        else:
+            bucket(d)["liquid"] += amt
+    if delegated: bucket("boot")["delegated"] += delegated
+    if undel:     bucket("boot")["undelegating"] += undel
+    rec = {}
+    for d, b in tokens.items():
+        tot = b["liquid"] + b["delegated"] + b["undelegating"] + sum(b["pools"].values())
+        if tot > 0:
+            rec[d] = {"label": label(d), **b, "total": tot}
+    return rec
+
+
 def compose_rates(pools):
     """boot-denominated rate for every denom seen across pools: a direct
     boot pool wins, otherwise route once through hydrogen."""
@@ -118,26 +146,8 @@ def main():
     out = open("/archive/snapshot/pub/holdings.jsonl", "w")
     n = 0
     for addr in addrs:
-        lq = liquid.get(addr, {})
-        tokens = {}
-        def bucket(denom):
-            return tokens.setdefault(denom, {"liquid": 0, "delegated": 0, "undelegating": 0, "pools": {}})
-        for d, amt in lq.items():
-            if d in pools:
-                p = pools[d]
-                if p["supply"]:
-                    for rd, rv in p["reserves"].items():
-                        bp = bucket(rd)["pools"]
-                        bp[p["id"]] = bp.get(p["id"], 0) + amt * rv // p["supply"]
-            else:
-                bucket(d)["liquid"] += amt
-        if delegated.get(addr): bucket("boot")["delegated"] += delegated[addr]
-        if undel.get(addr):     bucket("boot")["undelegating"] += undel[addr]
-        rec = {}
-        for d, b in tokens.items():
-            tot = b["liquid"] + b["delegated"] + b["undelegating"] + sum(b["pools"].values())
-            if tot > 0:
-                rec[d] = {"label": label(d), **b, "total": tot}
+        rec = compose_account_holdings(
+            liquid.get(addr, {}), pools, delegated.get(addr, 0), undel.get(addr, 0), label)
         if rec:
             out.write(json.dumps({"address": addr, "holdings": rec}, separators=(",", ":")) + "\n"); n += 1
     out.close()
