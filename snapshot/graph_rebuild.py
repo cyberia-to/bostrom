@@ -1,17 +1,5 @@
 import json, urllib.request, time, csv, hashlib, base64, socket, os
-socket.setdefaulttimeout(45)
 from concurrent.futures import ThreadPoolExecutor
-
-heights = sorted(int(l) for l in open("/tmp/all_txblocks.txt") if l.strip())
-last = 0
-try: last = int(open("/tmp/rebuild_progress.txt").read().strip())
-except Exception: pass
-heights = [h for h in heights if h > last]
-new = (last == 0)
-out = open("/tmp/cyberlinks_full.csv", "w" if new else "a", newline="")
-w = csv.writer(out)
-if new: w.writerow(["particle_from","particle_to","neuron","height","timestamp","transaction_hash"])
-print("resuming after", last, "-", len(heights), "to go", flush=True)
 
 def get(url):
     for _ in range(4):
@@ -47,16 +35,32 @@ def work(h):
             rows.append([f, t, "", h, ts, txh])
     return ("OK", h, rows)
 
-t0=time.time(); total=0; done=0; fails=0
-with ThreadPoolExecutor(max_workers=12) as ex:
-    for status, h, rows in ex.map(work, heights):
-        done += 1
-        if status.startswith("FAIL"): fails+=1; print(status, h, flush=True)
-        for r in rows: w.writerow(r)
-        total += len(rows)
-        if done % 2000 == 0:
-            open("/tmp/rebuild_progress.txt","w").write(str(h)); out.flush()
-        if done % 50000 == 0:
-            print(f"{done}/{len(heights)} blocks, {total} links, {fails} fails, {time.time()-t0:.0f}s", flush=True)
-out.close()
-print("DONE", total, "links,", fails, "fails", flush=True)
+def main():
+    socket.setdefaulttimeout(45)
+    heights = sorted(int(l) for l in open("/tmp/all_txblocks.txt") if l.strip())
+    last = 0
+    try: last = int(open("/tmp/rebuild_progress.txt").read().strip())
+    except Exception: pass
+    heights = [h for h in heights if h > last]
+    new = (last == 0)
+    out = open("/tmp/cyberlinks_full.csv", "w" if new else "a", newline="")
+    w = csv.writer(out)
+    if new: w.writerow(["particle_from","particle_to","neuron","height","timestamp","transaction_hash"])
+    print("resuming after", last, "-", len(heights), "to go", flush=True)
+
+    t0=time.time(); total=0; done=0; fails=0
+    with ThreadPoolExecutor(max_workers=12) as ex:
+        for status, h, rows in ex.map(work, heights):
+            done += 1
+            if status.startswith("FAIL"): fails+=1; print(status, h, flush=True)
+            for r in rows: w.writerow(r)
+            total += len(rows)
+            if done % 2000 == 0:
+                open("/tmp/rebuild_progress.txt","w").write(str(h)); out.flush()
+            if done % 50000 == 0:
+                print(f"{done}/{len(heights)} blocks, {total} links, {fails} fails, {time.time()-t0:.0f}s", flush=True)
+    out.close()
+    print("DONE", total, "links,", fails, "fails", flush=True)
+
+if __name__ == "__main__":
+    main()
