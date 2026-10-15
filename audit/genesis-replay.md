@@ -14,6 +14,10 @@ exact manifest CIDs replayed. Pipeline: `soft3 genesis build`
 
 ## 2026-10-15
 
+Pipeline: `soft3 genesis build` producing the chain.md §4 genesis file (one
+tade stream whose hemera particle is the chain id); full run report
+`soft3/audit/genesis-2026-10-15.md`; blessed values `soft3/conformance/chain.snap`.
+
 ### space-pussy
 
 Manifest `space-pussy/snapshot/manifest.json` (sha256 `b46cb327ca87222c…`),
@@ -24,22 +28,27 @@ halt 19,940,993 · 2026-06-14T08:36:41Z. Files replayed:
 `delegations.csv` QmZFu4fvS7BDr6Ny4FvJz4VpyjwWvVV2LgP6uLXWCq3dgw,
 `holdings.jsonl` QmcxDahwm8hSwZdp8gBWhnBZx8BRBXKyaNkdviiynaFeYi,
 `passports.jsonl` QmTvMKGSjB44arkBNwc8qdBWCEScj1PHCg4c4y2nj8r8nx,
+`pools.json` Qmb5gLZEx12vC6W4PkRR5PwnCp38t2GmzLpHZuQ272qo91,
 `supply.json` QmXPkBWZ6XkhQJxrFAfMVYnGDf4BL3Z67r1ceSPFCsaGhA.
 
 | dataset | rows in source | genesis entries | match |
 |---|---|---|---|
-| cyberlinks | 29,112 (manifest: restored 29,112 of 48,370) | 29,112 | yes |
-| accounts (`pubkeys.csv`) | 616 | 616 | yes |
-| passports | 1 | 1 | yes |
-| pussy supply | 1,099,389,810,279,114,036 | 1,099,389,810,279,114,036 | yes |
+| cyberlinks | 29,112 (manifest: restored 29,112 of 48,370) | 29,112 `l` | yes |
+| passports | 1 | 1 `l` (height 0) | yes |
+| accounts (`pubkeys.csv`) | 616 | 616 owners | yes |
+| pussy supply | 1,099,389,810,279,114,036 | 1,099,389,810,279,114,036 (S0) | yes |
+| every other carried denom (22) | `supply.json` | Σ `b` per token | yes |
 | particles | 16,271 distinct CIDs in restored links | 16,271 | yes |
 
 Known gap: 19,258 early links are unrecoverable (pruned before indexing);
-they are declared in the genesis manifest's `gaps`, not replayed.
+declared in the genesis report, not replayed.
 
-genesis hash `8339b4ad98f973155269e63272bdc282e2dee62081f927caa64107a4073e78b6`
-· **state root `f5b10b87d7eccffbba82c77fd30c14e62793ce11e0dd188bf481108672757093`**
-· 5 s · deterministic across two builds · `soft3 genesis verify --root` clean.
+**chain id (genesis particle) `2a83e54fe395ffbd924fc74a54a5c805eeec5396f97bf4c73fced8631a9e61b5`**
+· **state root `f2296834490e79d855673b18b0f9eb5c8242e4f48761e85b645d60a8cbeb5827`**
+· block-0 id `b863ce2877524e718bb51ea6dc7c5aba9540860f08d70162348d8e84b3eba304`
+· S0 1,099,389,810,279,114,036 · SUBSIDY 10,458,426,657 · 1,385 `b` / 29,113 `l`
+· 4 s · byte-identical across three builds · `soft3 genesis verify --root` clean.
+Root against bbg `1d39975` (DIMENSION_VERSION 2, no `NeuronRecord.nonce`).
 
 ### bostrom
 
@@ -51,23 +60,28 @@ halt 25,120,712 · 2026-08-05T08:55:00Z. Files replayed:
 `delegations.csv` QmRt9HWgGv5UFkZ4q2WYDoXtTj1T9td1DECdvXkbWXP1SY,
 `holdings.jsonl` QmQkR5jkbXjqCUNB6uj4EWaCRd7oWS7zbkcTWX1ZWtkvqW,
 `passports.jsonl` QmTSZ1DLV61ATVMRBmqVnebDjhVG52gLijwPQYzBxq3jQQ,
+`pools.json` QmbtuP9wdD6KzMxVWCb9R1Un8XAkBEnWwMeB2P9B3qLbUr,
 `supply.json` QmcyWzweYjtxM9cf1YFNh9c6Qg8yhe6yy4ghXC7wVasPaM.
 
 | dataset | rows in source | genesis entries | match |
 |---|---|---|---|
-| cyberlinks | 2,949,732 (manifest: on-chain 2,949,732) | 2,949,732 | yes |
+| cyberlinks | 2,949,732 (manifest: on-chain 2,949,732) | 2,949,732 `l` | yes |
+| passports | 47,837 | 47,837 `l` (height 0) | yes |
 | particles | 3,143,650 (manifest: on-chain 3,143,650) | 3,143,650 | yes |
-| accounts (`pubkeys.csv`) | 61,675 | 61,675 | yes |
-| passports | 47,837 | 47,837 | yes |
-| boot supply | 482,287,925,778,234 | 482,287,925,778,234 | yes |
-| cyb (tocyb × 666) | 281,405,532,467,645 × 666 | 187,416,084,623,451,570 | yes (= audited `genesis_cyb`) |
+| accounts (`pubkeys.csv`) | 61,675 | 61,675 owners | yes |
+| boot supply | 482,287,925,778,234 | 482,287,925,778,234 (S0) | yes |
+| tocyb | 281,405,532,467,645 | 281,405,532,467,645 (carried unchanged) | yes |
+| every other carried denom (47) | `supply.json` | Σ `b` per token | yes |
+| excluded | 2 denoms (36 rows) above 2^64 − 1 | not carried, listed | by rule |
 
-genesis hash `da45937f32613a7ca894c45453a7f6fa9b695c1c98d2889b425fc07118cb47b0`
-· **state root: not yet** — six bbg dimensions exceed lens Brakedown's 2^20
-field-element cap (particles needs 2^27); the manifest records `root_blocked`.
-Tables deterministic across two builds; 104 s, 5.2 GB. The per-batch recommit
-of launch row 43 is not what blocks it (the pipeline bulk-loads and commits
-once); the commitment size cap is. Detail in `soft3/audit/genesis-2026-10-15.md`.
+genesis particle `50d829b8d4a9237386645652336269b4e6755ffd53f6c4bdf32f2783f4dc75db`
+(330,841,445 bytes) · S0 482,287,925,778,234 · SUBSIDY 4,587,974 · 93,472 `b`
+/ 2,997,569 `l` · 122 s · **state root: not yet** — four bbg dimensions
+exceed lens Brakedown's 2^20 field-element cap (particles needs 2^26); the
+report records `root_blocked`. The per-batch recommit of launch row 43 is
+not what blocks it (the pipeline bulk-loads and commits once); the
+commitment size cap and two bbg inflations are. Detail in
+`soft3/audit/genesis-2026-10-15.md`.
 
 Steps 1–2 of the replay contract run clean on both chains; step 3 (the root)
 closes for space-pussy today and waits on bbg/lens for bostrom.
