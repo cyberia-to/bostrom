@@ -1,3 +1,4 @@
+import csv
 import hashlib
 import io
 import json
@@ -164,6 +165,14 @@ class _OutDirTestCase(unittest.TestCase):
         with open(os.path.join(self._tmp, name)) as f:
             return json.load(f)
 
+    def read_jsonl(self, name):
+        with open(os.path.join(self._tmp, name)) as f:
+            return [json.loads(line) for line in f if line.strip()]
+
+    def read_csv(self, name):
+        with open(os.path.join(self._tmp, name), newline="") as f:
+            return list(csv.reader(f))
+
 
 class CmdSupplyTests(_OutDirTestCase):
     def test_writes_the_paged_supply_list_verbatim(self):
@@ -279,6 +288,232 @@ class CmdManifestTests(_OutDirTestCase):
         extract.cmd_manifest()
         on_disk = self.read_json("manifest.json")
         self.assertEqual(on_disk, build_manifest(self._tmp))
+
+
+class CmdBalancesTests(_OutDirTestCase):
+    def test_writes_balances_csv_and_denom_traces_json(self):
+        traces = [{"denom_trace": "path/base", "base_denom": "boot"}]
+
+        def fake_paged(path, key, limit=1000, extra=""):
+            if path == "/cosmos/bank/v1beta1/supply":
+                return iter([])  # no extra ibc/pool denoms beyond CORE
+            if path == "/cosmos/bank/v1beta1/denom_owners/boot":
+                return iter([{"address": "bostrom1a", "balance": {"amount": "100"}}])
+            if path == "/ibc/apps/transfer/v1/denom_traces":
+                return iter(traces)
+            return iter([])
+
+        with mock.patch("extract.paged", side_effect=fake_paged):
+            extract.cmd_balances()
+        rows = self.read_csv("balances.csv")
+        self.assertEqual(rows[0], ["address", "denom", "amount"])
+        self.assertIn(["bostrom1a", "boot", "100"], rows)
+        self.assertEqual(self.read_json("denom_traces.json"), traces)
+
+    def test_extra_denom_from_supply_is_also_queried_for_owners(self):
+        seen_paths = []
+
+        def fake_paged(path, key, limit=1000, extra=""):
+            seen_paths.append(path)
+            if path == "/cosmos/bank/v1beta1/supply":
+                return iter([{"denom": "ibc/AAAA"}])
+            if path == "/ibc/apps/transfer/v1/denom_traces":
+                return iter([])
+            return iter([])
+
+        with mock.patch("extract.paged", side_effect=fake_paged):
+            extract.cmd_balances()
+        self.assertIn("/cosmos/bank/v1beta1/denom_owners/ibc%2FAAAA", seen_paths)
+
+    def test_no_owners_still_writes_header_only_csv(self):
+        with mock.patch("extract.paged", return_value=iter([])):
+            extract.cmd_balances()
+        self.assertEqual(self.read_csv("balances.csv"), [["address", "denom", "amount"]])
+        self.assertEqual(self.read_json("denom_traces.json"), [])
+
+
+class CmdStakingTests(_OutDirTestCase):
+    def test_writes_validators_json_and_delegations_csv(self):
+        validators = [{"operator_address": "bostromvaloper1x", "description": {"moniker": "val1"}}]
+        delegations = [
+            {
+                "delegation": {"delegator_address": "bostrom1d", "shares": "1000.0"},
+                "balance": {"amount": "1000"},
+            }
+        ]
+
+        def fake_paged(path, key, limit=1000, extra=""):
+            if path == "/cosmos/staking/v1beta1/validators":
+                return iter(validators)
+            if path == "/cosmos/staking/v1beta1/validators/bostromvaloper1x/delegations":
+                return iter(delegations)
+            return iter([])
+
+        with mock.patch("extract.paged", side_effect=fake_paged):
+            extract.cmd_staking()
+        self.assertEqual(self.read_json("validators.json"), validators)
+        rows = self.read_csv("delegations.csv")
+        self.assertEqual(rows[0], ["delegator", "validator", "shares", "balance_boot"])
+        self.assertIn(["bostrom1d", "bostromvaloper1x", "1000.0", "1000"], rows)
+
+    def test_multiple_validators_each_queried_by_own_operator_address(self):
+        validators = [
+            {"operator_address": "bostromvaloper1a", "description": {"moniker": "val-a"}},
+            {"operator_address": "bostromvaloper1b", "description": {"moniker": "val-b"}},
+        ]
+        queried = []
+
+        def fake_paged(path, key, limit=1000, extra=""):
+            if path == "/cosmos/staking/v1beta1/validators":
+                return iter(validators)
+            if path.startswith("/cosmos/staking/v1beta1/validators/"):
+                queried.append(path)
+            return iter([])
+
+        with mock.patch("extract.paged", side_effect=fake_paged):
+            extract.cmd_staking()
+        self.assertEqual(
+            queried,
+            [
+                "/cosmos/staking/v1beta1/validators/bostromvaloper1a/delegations",
+                "/cosmos/staking/v1beta1/validators/bostromvaloper1b/delegations",
+            ],
+        )
+
+    def test_no_validators_yields_empty_files_not_a_crash(self):
+        with mock.patch("extract.paged", return_value=iter([])):
+            extract.cmd_staking()
+        self.assertEqual(self.read_json("validators.json"), [])
+        self.assertEqual(
+            self.read_csv("delegations.csv"),
+            [["delegator", "validator", "shares", "balance_boot"]],
+        )
+
+
+class CmdPassportTests(_OutDirTestCase):
+    def _run(self, fake_smart):
+        with mock.patch.dict(os.environ, {"PASSPORT": "bostrom1passport"}), mock.patch(
+            "extract.smart", side_effect=fake_smart
+        ):
+            extract.cmd_passport()
+
+    def test_writes_one_line_per_token_across_a_paginated_walk(self):
+        def fake_smart(addr, q):
+            self.assertEqual(addr, "bostrom1passport")
+            if q == {"num_tokens": {}}:
+                return {"count": 2}
+            if q == {"all_tokens": {"limit": 100}}:
+                return {"tokens": ["1", "2"]}
+            if q == {"all_tokens": {"limit": 100, "start_after": "2"}}:
+                return {"tokens": []}
+            if q == {"all_nft_info": {"token_id": "1"}}:
+                return {
+                    "access": {"owner": "bostrom1a"},
+                    "info": {"extension": {"name": "one"}, "token_uri": None},
+                }
+            if q == {"all_nft_info": {"token_id": "2"}}:
+                return {"access": {"owner": "bostrom1b"}, "info": {}}
+            raise AssertionError(f"unexpected query {q}")
+
+        self._run(fake_smart)
+        recs = self.read_jsonl("passports.jsonl")
+        self.assertEqual([r["nickname"] for r in recs], ["1", "2"])
+        self.assertEqual(recs[0], {
+            "nickname": "1", "owner": "bostrom1a",
+            "extension": {"name": "one"}, "token_uri": None,
+        })
+        # a token record missing extension/token_uri entirely still writes,
+        # both fields defaulting to null rather than a KeyError
+        self.assertEqual(recs[1], {
+            "nickname": "2", "owner": "bostrom1b",
+            "extension": None, "token_uri": None,
+        })
+
+    def test_start_after_carries_the_last_token_id_of_the_previous_page(self):
+        seen_start_after = []
+
+        def fake_smart(addr, q):
+            if q == {"num_tokens": {}}:
+                return {"count": 2}
+            if "all_tokens" in q:
+                sa = q["all_tokens"].get("start_after")
+                seen_start_after.append(sa)
+                return {"tokens": ["1", "2"]} if sa is None else {"tokens": []}
+            return {"access": {"owner": "x"}, "info": {}}
+
+        self._run(fake_smart)
+        self.assertEqual(seen_start_after, [None, "2"])
+
+    def test_empty_first_page_writes_an_empty_file_not_a_crash(self):
+        def fake_smart(addr, q):
+            if q == {"num_tokens": {}}:
+                return {"count": 0}
+            if "all_tokens" in q:
+                return {"tokens": []}
+            raise AssertionError("all_nft_info should not be queried for zero tokens")
+
+        self._run(fake_smart)
+        self.assertEqual(self.read_jsonl("passports.jsonl"), [])
+
+    def test_missing_passport_env_var_fails_loud_not_with_an_empty_address(self):
+        os.environ.pop("PASSPORT", None)
+        with self.assertRaises(KeyError):
+            extract.cmd_passport()
+
+
+class CmdPubkeysTests(_OutDirTestCase):
+    def test_plain_account_pubkey_written(self):
+        accounts = [{
+            "base_account": {
+                "address": "bostrom1plain",
+                "pub_key": {"@type": "/cosmos.crypto.secp256k1.PubKey", "key": "AbCdEf=="},
+            }
+        }]
+        with mock.patch("extract.paged", return_value=iter(accounts)) as p:
+            extract.cmd_pubkeys()
+        rows = self.read_csv("pubkeys.csv")
+        self.assertEqual(rows[0], ["address", "pubkey_type", "pubkey_base64"])
+        self.assertEqual(rows[1], ["bostrom1plain", "/cosmos.crypto.secp256k1.PubKey", "AbCdEf=="])
+        self.assertEqual(p.call_args.args, ("/cosmos/auth/v1beta1/accounts", "accounts"))
+        self.assertEqual(p.call_args.kwargs, {"limit": 500})
+
+    def test_vesting_account_unwraps_the_nested_base_account(self):
+        accounts = [{
+            "base_vesting_account": {
+                "base_account": {
+                    "address": "bostrom1vesting",
+                    "pub_key": {"@type": "/cosmos.crypto.secp256k1.PubKey", "key": "VeSt=="},
+                }
+            }
+        }]
+        with mock.patch("extract.paged", return_value=iter(accounts)):
+            extract.cmd_pubkeys()
+        rows = self.read_csv("pubkeys.csv")
+        self.assertEqual(rows[1], ["bostrom1vesting", "/cosmos.crypto.secp256k1.PubKey", "VeSt=="])
+
+    def test_module_account_with_no_wrapper_falls_back_to_the_bare_entry(self):
+        accounts = [{"address": "bostrom1module", "name": "mint"}]
+        with mock.patch("extract.paged", return_value=iter(accounts)):
+            extract.cmd_pubkeys()
+        rows = self.read_csv("pubkeys.csv")
+        self.assertEqual(rows[1], ["bostrom1module", "", ""])
+
+    def test_missing_pub_key_writes_empty_type_and_key_not_a_crash(self):
+        accounts = [{"base_account": {"address": "bostrom1nokey"}}]
+        with mock.patch("extract.paged", return_value=iter(accounts)):
+            extract.cmd_pubkeys()
+        rows = self.read_csv("pubkeys.csv")
+        self.assertEqual(rows[1], ["bostrom1nokey", "", ""])
+
+    def test_multiple_accounts_all_written_in_order(self):
+        accounts = [
+            {"base_account": {"address": "a1", "pub_key": {"@type": "t1", "key": "k1"}}},
+            {"base_account": {"address": "a2", "pub_key": {"@type": "t2", "key": "k2"}}},
+        ]
+        with mock.patch("extract.paged", return_value=iter(accounts)):
+            extract.cmd_pubkeys()
+        rows = self.read_csv("pubkeys.csv")
+        self.assertEqual([r[0] for r in rows[1:]], ["a1", "a2"])
 
 
 if __name__ == "__main__":
