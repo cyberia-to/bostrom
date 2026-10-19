@@ -58,6 +58,17 @@ TOCYB; every TOCYB balance above is liquid.
   balance, a pubkey, a delegation or a passport on bostrom, and none appears
   in any public GitHub file: keys used only inside the multisig. Account
   sequence 2.
+- Why 97 T TOCYB survived the burn: at genesis the multisig held 700 T BOOT
+  and 700 T TOCYB (`go-cyber/networks/bostrom/genesis.json`); 97 T BOOT left
+  it for the cybergift claim contract, its TOCYB never moved; v6 burned a
+  fixed 603 T of each, sized to the BOOT left, so the BOOT went to 0 and
+  97 T TOCYB stayed. The supply confirms the upgrade ran: 1,000 T − 603 T
+  (gift) − 115,594,467,532,355 (congress) = 281,405,532,467,645, the
+  snapshot supply to the unit.
+- The congress multisig of v6 is a different account,
+  bostrom1xszmhkfjs3s00z2nvtn7evqxw3dtus6yr8e4pw: its 115.59 T TOCYB and
+  its BOOT were burned; at the halt it holds only A and V. The `congress`
+  passport account (#3) is a single key.
 
 ## IBC escrow on bostrom (tokens that live on other chains)
 
