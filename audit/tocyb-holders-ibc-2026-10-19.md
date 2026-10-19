@@ -107,3 +107,26 @@ PUSSY escrow 5,389,836,483,227,616 (0.49 % of 1.0994 E), almost all on
 channel-0 to bostrom (it lives on bostrom as an ibc denom); liquidpussy
 1.93 P (2.2 %). The pussy distribution module holds 982.67 P PUSSY, 98 % of
 the supply — dormant at genesis like bostrom's community pool.
+
+## the great web foundation account
+
+- Genesis (`go-cyber/networks/bostrom/genesis.json`): the 5 % allocation is
+  bostrom1ha4pw9w2qgc2ce9jwfrwrmaft5fneus58nqwev, 50 T BOOT and 50 T
+  TOCYB, a 2-of-3 multisig (LegacyAminoPubKey). Members:
+  bostrom10e85swjxcpwvjr583jghwxnnsl46yd6m7wsxrn,
+  bostrom1hfs27j6j6p63jewgkspm3x3cm972hj4tpmphz0, and
+  bostrom1mqn6z7tpyy3glwqfsmg9lly87vjs8dgkt3zs3a (the `congress` passport
+  key, #3 above). The first two hold no balance and no passport.
+- It sent exactly one transaction in its life (archive
+  `lcd.bostrom.cybernode.ai`, `message.sender`): height 20,518,010,
+  2025-09-16 11:48:42 UTC, tx
+  9F8D815C3ACE1A6AA8BB2F95BECB0182817BCFA7605B9DA6E5AEDCF024B40DD7 — MsgSend
+  of all 50 T BOOT and 50 T TOCYB to bostrom1mqn6z7…3a (congress). Signed by
+  members 1 and 3 (bitarray 0xA0): congress signed the transfer to itself
+  with one co-signer. Fee 42,000 BOOT, funded minutes earlier by
+  bostrom1nfmvw8x37w00p3geuu8lrt3vt5kadxa5xd9us7 (`developer42`, heights
+  20,517,532 and 20,517,907); 42 BOOT dust remains.
+- Thirteen days before the v6 upgrade, so the v6 burns (gift multisig 603 T,
+  congress multisig 115.59 T) did not touch it: the GWF's 50 T TOCYB is the
+  50 T TOCYB on the congress key today, a single key, live at the cyber
+  genesis.
