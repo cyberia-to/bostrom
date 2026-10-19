@@ -126,7 +126,8 @@ the supply — dormant at genesis like bostrom's community pool.
   with one co-signer. Fee 42,000 BOOT, funded minutes earlier by
   bostrom1nfmvw8x37w00p3geuu8lrt3vt5kadxa5xd9us7 (`developer42`, heights
   20,517,532 and 20,517,907); 42 BOOT dust remains.
-- Thirteen days before the v6 upgrade, so the v6 burns (gift multisig 603 T,
+- Ten days before the v6 upgrade (applied at height 20,667,000,
+  2025-09-26 11:46 UTC, `/cosmos/upgrade/v1beta1/applied_plan/v6`), so the v6 burns (gift multisig 603 T,
   congress multisig 115.59 T) did not touch it: the GWF's 50 T TOCYB is the
   50 T TOCYB on the congress key today, a single key, live at the cyber
   genesis.
