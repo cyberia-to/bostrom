@@ -84,3 +84,34 @@
 .slide.ch5 h2 em,.slide.ch5 .gstat b,.slide.ch5 .kick{color:color-mix(in srgb,var(--c) 55%,#fff)}
 .fullgraph h2,.fullgraph p,.fullgraph .gstat{text-shadow:0 2px 16px rgba(0,0,0,.95),0 0 3px #000}
 @media (max-width:900px){.hud .yield span:nth-child(n+2){display:none}.hud .yield b{font-size:12px}}
+
+/* music */
+.snd.music{margin-left:auto;border-color:var(--c4);color:var(--c4)}.snd.music.off{opacity:.6;border-color:currentColor;color:inherit}.hud .legend{margin-left:0}
+@media (max-width:900px){.snd.music{display:inline-block;margin-left:auto;font-size:10px;padding:3px 8px}}
+/* the family table */
+table.cmp{width:100%;border-collapse:collapse;font-size:13px;line-height:1.35}
+table.cmp th,table.cmp td{text-align:left;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.14);vertical-align:top}
+table.cmp th{font:11px var(--mono);letter-spacing:.14em;text-transform:uppercase}
+table.cmp th i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:6px;box-shadow:0 0 8px var(--c)}
+table.cmp td:first-child{font:11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);white-space:nowrap}
+table.cmp td:nth-child(2){color:#fff}
+.slide.ink table.cmp th,.slide.ink table.cmp td{border-color:rgba(0,0,0,.2)}
+/* balance: the result fills the slide, nothing scrolls */
+.slide.has-result .body{grid-template-columns:1fr;max-width:1200px}
+.slide.has-result .body>div:first-child{display:none}
+.slide.has-result .checker{max-height:none;overflow:visible}
+.slide.has-result .checker .tabs,.slide.has-result .checker [data-in],.slide.has-result .checker>.hint{display:none}
+.slide.has-result .checker .row{margin-top:0;justify-content:center}
+.bal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:0 36px;margin-top:4px}
+.bal-grid .trow,.bal-grid .sub{grid-template-columns:minmax(80px,auto) minmax(0,1fr) minmax(0,.8fr);font-size:13px}
+.bal-grid .amt,.bal-grid .est{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bal .tk{border-bottom:1px solid rgba(255,255,255,.12)}
+.bal .trow{cursor:pointer;border-bottom:0;padding:7px 0 5px}
+.bal .subs{display:none}.bal .tk.open .subs{display:block;padding-bottom:6px}
+.bal .hero{margin:6px 0 0}.bal .hero-sub{margin-bottom:6px}.bal .passline{margin:0 0 6px}
+@media (max-width:900px){.bal-grid{grid-template-columns:1fr}table.cmp{font-size:11px}table.cmp th,table.cmp td{padding:5px 6px}}
+
+/* marks everywhere, not only inside .n */
+.mk{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:6px;vertical-align:middle}
+.mk.m{background:var(--c4)}.mk.t{background:transparent;border:1px solid #00b8ff}.mk.k{background:transparent;border:1px dashed rgba(255,255,255,.6)}
+@media (max-width:900px){.snd.music{white-space:nowrap}.bal-grid .trow,.bal-grid .sub{font-size:12px}}
