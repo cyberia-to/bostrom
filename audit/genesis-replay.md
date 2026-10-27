@@ -10,7 +10,7 @@ crystal-domain: cyber
 The record `cybergraph/specs/genesis-replay.md` § verification step 3 asks
 for: source counts, genesis counts and the resulting root, dated, against the
 exact manifest CIDs replayed. Pipeline: `soft3 genesis build`
-(`soft3/specs/genesis.md`); full run report `soft3/audit/genesis-2026-10-15.md`.
+(`cybernode/specs/genesis.md`); full run report `soft3/audit/genesis-2026-10-15.md`.
 
 ## 2026-10-15
 

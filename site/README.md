@@ -14,7 +14,7 @@ flat navigation: every arrow, key, wheel and swipe on either axis moves one stat
 
 deimos (`cyber@195.201.105.229:8333`), `/archive/snapshot-new/pub/`, served as the apex bostrom.network; nginx maps the datasets and `vendor.js` onto
 `/archive/snapshot/pub/` (the burial snapshot, still served as snapshot.bostrom.network), everything else is `try_files … /index.html`.
-new.bostrom.network redirects here. config: `cybernode/servers/deimos/nginx/snapshot.bostrom.network`. the twin: `space-pussy/site` → spacepussy.ai.
+new.bostrom.network redirects here. config: `apparatus/servers/deimos/nginx/snapshot.bostrom.network`. the twin: `space-pussy/site` → spacepussy.ai.
 
 ```sh
 rsync -az -e "ssh -p 8333" site/ cyber@195.201.105.229:/archive/snapshot-new/pub/
