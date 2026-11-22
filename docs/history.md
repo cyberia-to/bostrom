@@ -49,7 +49,7 @@ Its improvement process was the bootloader improvement proposal, with the states
 
 ## its six tokens
 
-| token | denom | role | at the halt |
+| token | its name on the old chain | role | at the halt |
 |---|---|---|---|
 | BOOT | `boot` | consensus and governance; 1.09 % inflation; bonding created H one to one | 482,287,925,778,234 |
 | H | `hydrogen` | the liquid form of staked BOOT; burned to mint V and A | 305,452,862,328,021 |

@@ -9,7 +9,7 @@
 [network]
 name = "bostrom"
 hrp = "bostrom"                  # the prefix of a legacy address
-denom = "boot"                   # the native coin
+token = "boot"                   # the native token
 genesis_time = 1793884962        # 2026-11-05T13:22:42Z, five years to the second after the old chain began. That instant
                                  # has passed: the launch is by readiness, so this is the placeholder the blessed lock was
                                  # built for, and the time the launch sets rebuilds the genesis file and moves the lock with
