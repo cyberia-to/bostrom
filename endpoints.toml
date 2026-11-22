@@ -1,0 +1,15 @@
+# where bostrom is met.
+
+[public]
+site = "https://bostrom.network"
+explorer = ""                                          # none yet: the explorer runs for pussy first
+explorer_api = ""
+burial = "https://snapshot.bostrom.network"            # the snapshot of the old chain
+
+[node]
+api = "127.0.0.1:7782"   # the default bind of `cybernode node --chain bostrom`
+radio = "0.0.0.0:7792"   # the wire, UDP
+
+[peers]
+# none: the network is not launched.
+bootstrap = []

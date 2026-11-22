@@ -1,0 +1,28 @@
+# what the genesis of bostrom is built from: the burial snapshot of the old bostrom chain.
+# The pins of every file — its content address, sha256 and size — are in the manifest; this file
+# pins the manifest.
+
+[burial]
+chain = "bostrom"                      # the cosmos chain that ran on go-cyber and was halted
+halt_height = 25120712
+halt_time = "2026-08-05T08:55:00Z"
+extracted = "2026-08-28"
+manifest = "snapshot/manifest.json"
+manifest_sha256 = "9def76d42ef90b80c1feccb362817e4bd9a5917772369ca6acfd7c0fd96e29a5"
+site = "https://snapshot.bostrom.network" # the burial site, the fallback when the content network does not answer
+
+[burial.read]
+# the files of the snapshot the genesis pipeline reads; each is fetched by its pin and verified by
+# sha256 and size on every build, cached or not. The full state export is not read.
+files = [
+  "supply.json",
+  "pools.json",
+  "pubkeys.csv",
+  "balances.csv",
+  "delegations.csv",
+  "holdings.jsonl",
+  "passports.jsonl",
+  "cyberlinks_indexed.csv.gz",
+]
+layout = "<content address>/<name>"
+cache = "~/.cache/cyber/snapshots/bostrom/" # never in git
