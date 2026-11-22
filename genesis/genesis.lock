@@ -1,0 +1,32 @@
+# the lock: what the rules of this repository build, by digest. The particle of the genesis file
+# is the chain id. A node that loads another file is on another network.
+#
+# From soft3 conformance/chain-genesis.toml [bostrom] on release/phase1, blessed 2026-10-17. The
+# file itself is not in git: `cybernode genesis build` produces it from the pinned snapshot, byte
+# for byte, and `cybernode genesis verify FILE --root` recomputes every line below. The receipt of
+# the two runs these values are read from is audit/genesis-build-2026-10-17.md; the earlier numbers
+# in audit/genesis-replay.md are the file of 2026-10-15, before the pool record and hemera 0.4.
+#
+# This lock is for the genesis time in network.toml. The launch is by readiness: when its time is
+# set, the file is rebuilt and this lock changes with it, by a build receipt in audit/.
+
+[genesis]
+particle = "f78c60edd6aea30af0da261233334e7549e63ece912a82c8d5b9e4df3cadb425"   # the chain id
+file_sha256 = "ffa3d6dd89839224192f3fa268651fbb87923435f66de872b0f14c833e446443"
+file_bytes = 330841520
+time = 1793884962
+block0_id = "a13f0f627dae47a00fe50f7f9c538148345f52ab6200518e2360798c504fc3d5"
+state_root = "fa0c2c9404a6eff04737ed7dfe11c63c1992b4820fdf039a55c6d2f103d7508d"
+
+[contents]
+genesis_supply = 482287925778234
+subsidy = 4587974
+balance_frames = 93472
+link_frames = 2997569
+source_manifest_sha256 = "9def76d42ef90b80c1feccb362817e4bd9a5917772369ca6acfd7c0fd96e29a5"
+
+[built_with]
+pipeline = "cybernode genesis build"
+hash = "cyber-hemera 0.4.0, profile 15"
+state = "bbg dimension version 4"
+blessed = "2026-10-17"
