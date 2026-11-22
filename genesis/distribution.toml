@@ -25,7 +25,7 @@ check = "the sum of every carried denom equals supply.json"
 
 [supply]
 genesis_supply = "the bank supply of the native coin at the halt"   # no swap is executed
-value = "482287925778234"                     # micro-units, from the lock
+value = 482287925778234                       # micro-units, from the lock
 subsidy = "floor(genesis_supply / 105120000)" # per block
 
 [result]

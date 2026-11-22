@@ -57,7 +57,7 @@ Proposed on 2026-09-27 and open until the genesis fixes it. None of it is in the
 | registering a book | 10 % of the book's own premint | 2 % |
 | parameters | fixed | by vote |
 
-Why these: emission goes only to work, so a passive stake earns rank and never income, and the founder's share of about 60 % shrinks without a balance being touched. The cap on weight means that owning 60 % never weighs 60 %. The burn for space keeps the graph small enough to boot a device. The root fee is the one bond between the two networks: a child network pays the kernel in BOOT for its name and its finality.
+Why these: emission goes only to work, so a passive stake earns rank and never income, and the founder's share — which the proposal puts at about 60 %, its own figure, read from [tokens](https://cyber.page/tokens/) note 4 — shrinks without a balance being touched. The cap on weight means that owning 60 % never weighs 60 %. The burn for space keeps the graph small enough to boot a device. The root fee is the one bond between the two networks: a child network pays the kernel in BOOT for its name and its finality.
 
 The source of the proposal, with its notes: [tokens](https://cyber.page/tokens/).
 

@@ -83,5 +83,12 @@ not what blocks it (the pipeline bulk-loads and commits once); the
 commitment size cap and two bbg inflations are. Detail in
 `soft3/audit/genesis-2026-10-15.md`.
 
+These are the numbers of the file as it stood on 2026-10-15. It was built
+again on 2026-10-16 and 2026-10-17, after the pool record and hemera 0.4,
+and `genesis/genesis.lock` pins that later file: particle `f78c60ed…`,
+330,841,520 bytes, the root no longer blocked. The counts and the supply in
+the table above did not move. The receipt is
+[`audit/genesis-build-2026-10-17.md`](genesis-build-2026-10-17.md).
+
 Steps 1–2 of the replay contract run clean on both chains; step 3 (the root)
 closes for space-pussy today and waits on bbg/lens for bostrom.

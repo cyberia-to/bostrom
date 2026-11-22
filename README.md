@@ -53,7 +53,7 @@ cybernode genesis build --chain bostrom --snapshot snapshot --out bostrom.genesi
 cybernode genesis verify bostrom.genesis --root
 ```
 
-The build fetches every file the manifest pins, verifies each by sha256 and size, and writes the genesis file with a report beside it. Two builds give the same bytes. The particle, the block-0 id and the state root it prints are the ones in [genesis/genesis.lock](genesis/genesis.lock). The file is 330,841,520 bytes; the build took 73 seconds and 7.9 GB of memory when it was blessed.
+The build fetches every file the manifest pins, verifies each by sha256 and size, and writes the genesis file with a report beside it. The particle, the block-0 id and the state root it prints are the ones in [genesis/genesis.lock](genesis/genesis.lock). The file is 330,841,520 bytes; two runs of the pipeline, on 2026-10-16 and on 2026-10-17, gave the same bytes, and the second took 73 seconds and 7.9 GB of memory — the receipt is [audit/genesis-build-2026-10-17.md](audit/genesis-build-2026-10-17.md).
 
 ## run a node
 

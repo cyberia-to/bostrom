@@ -1,7 +1,7 @@
 ---
 title: the history of bostrom
 tags: cyber, bostrom, bootloader, history
-alias: bostrom history, the old chain of bostrom, bostrom story, the story of bostrom, why we need bootloader, bostrom tokenomics, bostrom token model, bostrom/mint, bostrom mint, energy mint, bostrom genesis, bostrom/genesis, bostrom infrastructure, bootloader improvement proposal, bootloader improvement proposals, bips, finalization of $BOOT distribution, neuron of bostrom, moon-passport, .moon names, cw-cyber
+alias: bostrom history, the old chain of bostrom, bostrom story, the story of bostrom, why we need bootloader, bostrom tokenomics, bostrom token model, bostrom/mint, bostrom mint, energy mint, bostrom genesis, bostrom/genesis, bostrom infrastructure, bootloader improvement proposal, bootloader improvement proposals, bips, finalization of $BOOT distribution, neuron of bostrom, moon-passport, .moon names, cw-cyber, .eth names, bip, bostrom-rust-migration, burn H, burn fee on moving A and V, burn gas in H, burn.city, citizen web3, collect fee on moving A and V, create avatar, cyb neuron guide, cybaca, enjoy moon passport, explicit mint and burn of H, fixed fee on H burn, gpu-vm-spec, introduction to bostrom for ai geeks, staking loans, twitter-on-top-of-cyber, usable tokens, ai agents, bootloading, buy name, cyber-os-unified-blueprint, enhanced blockchain, go-cyber-to-rust-migration, go-to-rust-host-migration, a-gaming, blackmatter, bronbro, galaxy, godzilla, papsan, posthuman, saturnia, spectrum, subi, sung2v, techstur, web34ever, bostrom/2, bostrom/3, bostrom/analytics, analytics, bostrom/api, bostrom/bandwidth, bostrom/bip/create cyberlink twice, create cyberlink twice, bostrom/clocks, clocks, bostrom/congress-audit, congress-audit, bostrom/consensus, bostrom/cyberbank, cyberbank, bostrom/dmn, bostrom/graph, bostrom/grid, bostrom/liquidity, liquidity, bostrom/liquidity roadmap, liquidity roadmap, bostrom/lithium, lithium, bostrom/rank, bostrom/resources, bostrom/tokenomics, tokenomics, bostrom/wasm
 crystal-type: article
 crystal-domain: cyber
 ---
@@ -9,6 +9,8 @@ crystal-domain: cyber
 # the history of bostrom
 
 One page for the first life of bostrom: the cosmos chain that ran from 2021 to 2026 as the bootloader of [[cyber]]. It replaces the pages this repository carried about that chain. They are kept whole on the branch [`legacy/graph-pages`](https://github.com/cyberia-to/bostrom/tree/legacy/graph-pages).
+
+Their names are the aliases of this page, so that a link made to any of them lands here. Three groups of names are deliberately not taken. A name another page of the graph already carries is left to it — `avatars`, `bootloader`, `cybernode`, `guides`, `tutorials`, `reference`, and of the modules `api`, `bandwidth`, `consensus`, `dmn`, `genesis`, `graph`, `grid`, `mint`, `rank`, `resources`, `wasm`; the module's own form (`bostrom/graph`) comes here instead. `bostrom` is the name of this repository itself and now opens its [readme](../README.md). And the bare numerals of `bostrom/2` and `bostrom/3` are left alone.
 
 ## the line of time
 
@@ -62,7 +64,7 @@ The resource tokens do not return. What they priced — the room to write and th
 
 ## how BOOT was distributed
 
-One structure for BOOT and TOCYB at the genesis of 2021:
+One structure for BOOT and TOCYB at the genesis of 2021, over a supply of 1,000T of each:
 
 | share | to |
 |---|---|
@@ -72,7 +74,9 @@ One structure for BOOT and TOCYB at the genesis of 2021:
 | 5.1 % | the senate |
 | 5 % | the great web foundation |
 
-Most of the gift was never claimed and stayed in multisigs through the five years: 603T BOOT and 700T TOCYB in the gift's multisig, 148T BOOT claimed. That is why control of the majority of BOOT ended with the founder, and why the first job of the reborn bostrom is to dilute that majority by work.
+Most of the gift was never claimed. The ledger of the distribution — the page `finalization of $BOOT distribution`, on `legacy/graph-pages` — counted 603T BOOT and 700T TOCYB still in the gift's 2-of-3 multisig and 148T BOOT claimed through the gift's program. Those are figures of the supply of their own time, not of the table above: the v6 upgrade of 2025-09-26 burned the gift multisig's 603T BOOT and 603T TOCYB, and the congress multisig's BOOT and its 115.6T TOCYB with them. For TOCYB the arithmetic closes to the unit — 1,000T − 603T − 115.6T is the 281,405,532,467,645 of the table; BOOT carried five years of inflation besides the burns and ends at 482.3T. Every allocation is followed from the 2021 genesis to the halt in cyber's audit [TOCYB allocations and the CYB genesis](https://github.com/cyberia-to/cyber/blob/master/audit/genesis/tocyb-allocations-2026-10-19.md).
+
+What the burn did not undo is the concentration. At the halt, with every delegation counted to the neuron that made it, five accounts hold 57 % of BOOT: the senate's community pool (16 %), the congress key (15 %), the two largest neuron keys (14 % and 5 %) and the escrow of the bridge to osmosis (6 %) — the figures are in the burial's `balances.csv` and `delegations.csv`, the accounts are named in that audit. That is why the first job of the reborn bostrom is to dilute the majority by work.
 
 ## the passports
 

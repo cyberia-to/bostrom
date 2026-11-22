@@ -18,12 +18,12 @@ the node is cyberia-to/cybernode. a change to how a network runs goes there; a c
 
 ## rules
 
-- a value of `network.toml` is the node's value. it changes only together with the node, and the commit names the node's commit.
-- `genesis/genesis.lock` changes only with a build receipt in `audit/`: two independent builds of the same inputs, the same bytes.
+- a value of `network.toml` is the node's value. it changes only together with the node, and the commit names the node's commit. nothing compares them automatically: whoever moves the commit in the file's header reads `rs/src/chain/params.rs` and `rs/src/cli.rs` of cybernode at that commit and brings every value across in the same change. that reading is the only place a divergence is caught until cybernode takes this file as its input.
+- `genesis/genesis.lock` changes only with a build receipt in `audit/`. the receipt names the pinned inputs, two runs of the pipeline over them that gave the same bytes, and the bbg dimension version the state root was taken under; the current one is `audit/genesis-build-2026-10-17.md`.
 - `snapshot/manifest.json` is the genesis's source and is never edited: a new burial is a new manifest and a new lock.
 - the genesis file and the snapshot's files are never committed; they are built and fetched.
 - `docs/economics.md` keeps the running, the proposed and the open apart: a figure moves from proposed to running only when the node carries it.
-- the pages of the old chain are on the branch `legacy/graph-pages` and do not come back to the default branch; `docs/history.md` is their one page and carries their names as aliases.
+- the pages of the old chain are on the branch `legacy/graph-pages` and do not come back to the default branch; `docs/history.md` is their one page and carries their names as aliases, except a name another page of the graph already carries, which is left to it — the page says which.
 
 ## checks before a commit
 
